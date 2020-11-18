@@ -1,0 +1,30 @@
+# This is a basic workflow that is manually triggered
+
+name: Deploy Prod Risk Parody Bot
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+env:
+  # TODO: Change variable to your image's name.
+  IMAGE_NAME: mr_market
+  CONTAINER_NAME: mr_market_risk_parody
+  
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "greet"
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: deploy-prod
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Runs a single command using the runners shell
+    - name: Docker pull and deploy 
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        docker pull docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+        [ ! "$(docker ps -a | grep $CONTAINER_NAME)" ] || docker stop $CONTAINER_NAME
+        [ ! "$(docker ps -a | grep $CONTAINER_NAME)" ] || docker rm $CONTAINER_NAME
+        docker run --name $CONTAINER_NAME --env IEX_TOKEN=${{ secrets.IEX_TOKEN }} --env SLACK_EVENTS_TOKEN=${{ secrets.LH_SLACK_EVENTS_TOKEN }} --env SLACK_TOKEN=${{ secrets.LH_SLACK_TOKEN }} -d -p 127.0.0.1:5000:5000 docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
