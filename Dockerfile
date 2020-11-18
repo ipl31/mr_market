@@ -3,5 +3,5 @@ WORKDIR /mr_market
 COPY requirements.txt /mr_market/
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . /mr_market/
-RUN chmod +x /code/entrypoint.sh
-ENTRYPOINT ['/entrypoint.sh']
+ENTRYPOINT ["python"]
+CMD ["/mr_market/main.py"]

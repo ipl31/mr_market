@@ -20,7 +20,3 @@ def handle_message(data):
     """ Handle slack message events """
     app.logger.debug('Handling slack message event.')
     return None
-
-if __name__ == '__main__':
-    #TODO: Turn off debug.
-    app.run(debug=True)
