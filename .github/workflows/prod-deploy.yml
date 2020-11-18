@@ -27,5 +27,5 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Docker deploy
-      run: echo "${GITHUB_TOKEN}" | docker login -u "${GITHUB_ACTOR}" --password-stdin docker.pkg.github.com
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       
