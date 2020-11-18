@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Deploy Prod Risk Parody Bot
+name: Deploy Dev Risk Parody Bot
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
