@@ -74,3 +74,5 @@ def handle_message(data):
             post_message(channel_id, f"I encountered an error for {symbol}")
             return
         return
+
+    post_message(channel_id, "I don't understand.")
