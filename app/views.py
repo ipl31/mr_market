@@ -69,6 +69,7 @@ def handle_message(data):
             message = f"Symbol: {symbol}  Price: {price}"
             post_message(channel_id, message)
         except Exception:
+            app.logger.execption("Error getting stock price")
             post_message(channel_id, f"I encountered an error for {symbol}")
             return
         return
