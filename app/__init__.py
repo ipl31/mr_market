@@ -22,8 +22,8 @@ def hello():
     return "Hello"
 
 
-@slack_events_adapter.on("message")
+@slack_events_adapter.on("event")
 def handle_message(data):
     """ Handle slack message events """
-    app.logger.debug('Handling slack message event.')
+    app.logger.debug('Handling slack event.')
     return None
