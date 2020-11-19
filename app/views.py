@@ -1,6 +1,7 @@
 import logging
 import os
 from iexfinance.stocks import Stock
+from iexfinance.altdata import get_social_sentiment
 from . import app
 from slackeventsapi import SlackEventAdapter
 from slack import WebClient
@@ -57,24 +58,60 @@ def handle_message(data):
         logger.debug("Message is not addressed to me. Skipping")
         return
 
-    if "hello" in text.lower():
+    tokenized_message = text.lower().split()
+    maybe_command = text.lower()[1]
+
+    if maybe_command == "hello":
         post_message(channel_id, "Hello!")
         return
 
-    if "price" in text.lower():
-        message_list = text.split()
-        symbol = message_list[2]
-        try:
-            stock = Stock(symbol)
-            price = stock.get_price()
-            message = f"Symbol: {symbol}  Price: {price}"
-            post_message(channel_id, message)
-        except Exception:
-            logger.exception("Error getting stock price")
-            post_message(channel_id, f"I encountered an error for {symbol}")
-            return
-        return
+    if maybe_command == "sentiment":
+        symbol = tokenized_message[2]
+        sentiment_data = get_social_sentiment(symbol)
+        sentiment = sentiment_data["sentiment"]
+        scores = sentiment_data["scores"]
+        positive = sentiment_data["positive"]
+        negative = sentiment_data["negative"]
+        msg = (f"Symbol:`{symbol}` Sentiment:`{sentiment}`"
+               "Scores:`{scores}` Positive:`{positive}` Negative:`{negative}`")
+        post_message(channel_id, msg)
 
-    msg = ('I doni\'t understand your request.'
-           ' I understand "price $symbol" and "hello"')
+    if maybe_command == "stock":
+        maybe_sub_command = tokenized_message[1]
+        if maybe_sub_command == "sentiment":
+            maybe_symbol = tokenized_message[2]
+            try:
+                sentiment_data = get_social_sentiment(maybe_symbol)
+            except Exception:
+                msg = f"I encountered and error getting sentiment for {symbol}"
+                logger.exception(msg)
+                post_message(channel_id, msg)
+                return
+
+            sentiment = sentiment_data["sentiment"]
+            scores = sentiment_data["scores"]
+            positive = sentiment_data["positive"]
+            negative = sentiment_data["negative"]
+            message = f"Symbol:`{symbol}` Sentiment:`{sentiment}`" \
+                      f" Scores:`{scores}` Positive:`{positive}`" \
+                      f" Negative:`{negative}`"
+            post_message(channel_id, message)
+
+        if maybe_sub_command == "price":
+            symbol = tokenized_message[2]
+            try:
+                stock = Stock(symbol)
+                price = stock.get_price()
+                message = f"Symbol: `{symbol}`  Price: `{price}`"
+                post_message(channel_id, message)
+            except Exception:
+                logger.exception("Error getting stock price")
+                post_message(channel_id,
+                             f"I encountered an error for `{symbol}`")
+                return
+            return
+
+    msg = ('I don\'t understand your request.'
+           ' I understand "stock price $symbol",'
+           '"stock quote $symbol", "stock sentiment $symbol" and "hello"')
     post_message(channel_id, msg)
