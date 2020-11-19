@@ -62,7 +62,7 @@ def handle_message(data):
 
     if "price" in text.lower():
         message_list = text.split()
-        symbol = message_list[1]
+        symbol = message_list[2]
         try:
             stock = Stock(symbol).get_price()
             price = stock.get_price()
