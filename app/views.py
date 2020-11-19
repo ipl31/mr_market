@@ -14,6 +14,8 @@ if events_token is None or client_token is None:
 
 slack_events_adapter = SlackEventAdapter(events_token, "/slack/events", app)
 slack_web_client = WebClient(token=client_token)
+bot_id = client.api_call("auth.test")['user_id']
+message_count = {}
 
 
 @app.route("/")
@@ -26,7 +28,11 @@ def handle_message(data):
     """ Handle slack message events """
     app.logger.debug("Handling slack message event.")
     event = data.get("event", {})
+    user_id = event.get("user")
     text = event.get("text")
     channel_id = event.get("channel")
-    app.logger.debug(f"Channel ID: {channel_id} Message text: {text}")
+    if bot_id == user_id:
+        app.logger.debug("Message is from myself, skipping.")
+        return None
+    app.logger.debug(f"event: {event}")
     return None
