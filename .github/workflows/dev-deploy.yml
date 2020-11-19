@@ -27,4 +27,4 @@ jobs:
         docker pull docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
         [ ! "$(docker ps -a | grep $CONTAINER_NAME)" ] || docker stop $CONTAINER_NAME
         [ ! "$(docker ps -a | grep $CONTAINER_NAME)" ] || docker rm $CONTAINER_NAME
-        docker run --name $CONTAINER_NAME --env SLACK_EVENTS_TOKEN=${{ secrets.LH_SLACK_EVENTS_TOKEN }} --env SLACK_TOKEN=${{ secrets.LH_SLACK_TOKEN }} -d -p 127.0.0.1:5001:5000 docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+        docker run --name $CONTAINER_NAME --env IEX_API_TOKEN=${{ secrets.IEX_API_TOKEN }} --env SLACK_EVENTS_TOKEN=${{ secrets.LH_SLACK_EVENTS_TOKEN }} --env SLACK_TOKEN=${{ secrets.LH_SLACK_TOKEN }} -d -p 127.0.0.1:5001:5000 docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
