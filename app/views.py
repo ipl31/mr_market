@@ -15,6 +15,16 @@ if events_token is None or client_token is None:
 slack_events_adapter = SlackEventAdapter(events_token, "/slack/events", app)
 slack_client = WebClient(token=client_token)
 
+MSG_BLOCK = {
+            "type": "section",
+            "text": {
+                    "type": "mrkdwn",
+                    "text": (
+                            "Hello! \n\n"
+                            ),
+                    },
+            }
+
 
 @app.route("/")
 def hello():
@@ -34,4 +44,7 @@ def handle_message(data):
         app.logger.debug("Message is from myself, skipping.")
         return None
     app.logger.debug(f"event: {event}")
-    return None
+    if "hello" in text:
+        return {"channel": channel_id,
+                "blocks": [MSG_BLOCK],
+                }
