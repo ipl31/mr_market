@@ -26,11 +26,10 @@ def create_message_block(text):
     return msg_block
 
 
-def post_message(channel_id, blocks):
-    if isinstance(blocks, list) is False:
-        raise TypeError("Blocks must be list")
+def post_message(channel_id, text):
+    block = create_message_block(text)
     message = {"channel": channel_id,
-               "blocks": blocks,
+               "blocks": [block],
                }
     slack_client.chat_postMessage(**message)
 
@@ -58,7 +57,7 @@ def handle_message(data):
         return
 
     if "hello" in text.lower():
-        post_message(channel_id, ["Hello!"])
+        post_message(channel_id, "Hello!")
         return
 
     if "price" in text.lower():
@@ -68,8 +67,8 @@ def handle_message(data):
             stock = Stock(symbol).get_price()
             price = stock.get_price()
             message = f"Symbol: {symbol}  Price: {price}"
-            post_message(channel_id, [message])
+            post_message(channel_id, message)
         except Exception:
-            post_message(channel_id, [f"I encountered an error for {symbol}"])
+            post_message(channel_id, f"I encountered an error for {symbol}")
             return
         return
