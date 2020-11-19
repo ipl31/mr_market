@@ -1,5 +1,6 @@
 import logging
 import os
+from iexfinance.stocks import Stock
 from . import app
 from slackeventsapi import SlackEventAdapter
 from slack import WebClient
@@ -15,15 +16,23 @@ if events_token is None or client_token is None:
 slack_events_adapter = SlackEventAdapter(events_token, "/slack/events", app)
 slack_client = WebClient(token=client_token)
 
-MSG_BLOCK = {
-            "type": "section",
-            "text": {
-                    "type": "mrkdwn",
-                    "text": (
-                            "Hello! \n\n"
-                            ),
-                    },
-            }
+
+def create_message_block(text):
+    msg_block = {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": (f"{text}\n\n"),
+                         },
+                }
+    return msg_block
+
+
+def post_message(channel_id, blocks):
+    if isinstance(blocks, list) is False:
+        raise TypeError("Blocks must be list")
+    message = {"channel": channel_id,
+               "blocks": blocks,
+               }
+    slack_client.chat_postMessage(**message)
 
 
 @app.route("/")
@@ -40,12 +49,27 @@ def handle_message(data):
     user_id = event.get("user")
     text = event.get("text")
     channel_id = event.get("channel")
+
     if bot_id == user_id:
         app.logger.debug("Message is from myself, skipping.")
-        return None
-    app.logger.debug(f"event: {event}")
-    if "hello" in text and bot_id in text:
-        message = {"channel": channel_id,
-                   "blocks": [MSG_BLOCK],
-                   }
-        slack_client.chat_postMessage(**message)
+        return
+    if bot_id not in text:
+        app.logger.debug("Message is not addressed to me. Skipping")
+        return
+
+    if "hello" in text.lower():
+        post_message(channel_id, ["Hello!"])
+        return
+
+    if "price" in text.lower():
+        message_list = text.split()
+        symbol = message_list[1]
+        try:
+            stock = Stock(symbol).get_price()
+            price = stock.get_price()
+            message = f"Symbol: {symbol}  Price: {price}"
+            post_message(channel_id, [message])
+        except Exception:
+            post_message(channel_id, [f"I encountered an error for {symbol}"])
+            return
+        return
