@@ -8,7 +8,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 events_token = os.environ.get("SLACK_EVENTS_TOKEN")
-client_token = os.environ.net("SLACK_TOKEN")
+client_token = os.environ.get("SLACK_TOKEN")
 
 if events_token is None or client_token is None:
     raise KeyError("Slack tokens not set")
