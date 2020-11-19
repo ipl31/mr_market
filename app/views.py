@@ -64,7 +64,7 @@ def handle_message(data):
         message_list = text.split()
         symbol = message_list[2]
         try:
-            stock = Stock(symbol).get_price()
+            stock = Stock(symbol)
             price = stock.get_price()
             message = f"Symbol: {symbol}  Price: {price}"
             post_message(channel_id, message)
