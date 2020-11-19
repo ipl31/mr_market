@@ -75,4 +75,6 @@ def handle_message(data):
             return
         return
 
-    post_message(channel_id, "I don't understand.")
+    msg = ('I doni\'t understand your request.'
+           ' I understand "price $symbol" and "hello"')
+    post_message(channel_id, msg)
