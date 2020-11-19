@@ -13,9 +13,7 @@ if events_token is None or client_token is None:
     raise KeyError("Slack tokens not set")
 
 slack_events_adapter = SlackEventAdapter(events_token, "/slack/events", app)
-slack_web_client = WebClient(token=client_token)
-bot_id = client.api_call("auth.test")['user_id']
-message_count = {}
+slack_client = WebClient(token=client_token)
 
 
 @app.route("/")
@@ -27,6 +25,7 @@ def hello():
 def handle_message(data):
     """ Handle slack message events """
     app.logger.debug("Handling slack message event.")
+    bot_id = slack_client.api_call("auth.test")['user_id']
     event = data.get("event", {})
     user_id = event.get("user")
     text = event.get("text")
