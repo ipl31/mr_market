@@ -7,8 +7,14 @@ from slack import WebClient
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
-slack_events_adapter = SlackEventAdapter(os.environ.get("SLACK_EVENTS_TOKEN"), "/slack/events", app)
-slack_web_client = WebClient(token=os.environ.get("SLACK_TOKEN"))
+events_token = os.environ.get("SLACK_EVENTS_TOKEN")
+client_token = os.environ.net("SLACK_TOKEN")
+
+if events_token is None or client_token is None:
+    raise KeyError("Slack tokens not set")
+
+slack_events_adapter = SlackEventAdapter(events_token, "/slack/events", app)
+slack_web_client = WebClient(token=client_token)
 
 
 @app.route("/")
