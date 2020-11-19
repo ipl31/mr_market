@@ -45,6 +45,7 @@ def handle_message(data):
         return None
     app.logger.debug(f"event: {event}")
     if "hello" in text:
-        return {"channel": channel_id,
-                "blocks": [MSG_BLOCK],
-                }
+        message = {"channel": channel_id,
+                   "blocks": [MSG_BLOCK],
+                   }
+        slack_client.chat_postMessage(message)
