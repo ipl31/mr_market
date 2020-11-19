@@ -48,4 +48,4 @@ def handle_message(data):
         message = {"channel": channel_id,
                    "blocks": [MSG_BLOCK],
                    }
-        slack_client.chat_postMessage(message)
+        slack_client.chat_postMessage(**message)
