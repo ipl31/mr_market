@@ -44,7 +44,7 @@ def handle_message(data):
         app.logger.debug("Message is from myself, skipping.")
         return None
     app.logger.debug(f"event: {event}")
-    if "hello" in text:
+    if "hello" in text and bot_id in text:
         message = {"channel": channel_id,
                    "blocks": [MSG_BLOCK],
                    }
