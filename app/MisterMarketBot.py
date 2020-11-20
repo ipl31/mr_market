@@ -49,15 +49,20 @@ class MisterMarketBot:
         post_message(channel_id, message)
 
     def handle_slack_event(self, payload):
-        if self._is_payload_from_me(payload):
+        event = payload.get("event", {})
+        if self._is_payload_from_me(event):
             return
 
-        # event = payload.get("event", {})
         # user_id = payload.get("user")
-        channel_id = payload.get("channel")
-        text = payload.get("text")
+        channel_id = event.get("channel")
+        text = event.get("text")
         message_with_user_stripped = text.split(' ', 1)[1]
 
         if not self._is_message_command(message_with_user_stripped):
             self._send_error_message(self, channel_id)
             return
+        tokenized_command = message_with_user_stripped.split()
+        skill = tokenized_command.pop()
+        command = tokenized_command.pop()
+        args = tokenized_command
+        self._run_skill_command(skill, command, args)
