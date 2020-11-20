@@ -24,7 +24,7 @@ class IexStockSkill(ISkill):
         if command not in self._get_commands():
             return "error"
         results = getattr(stock, command)(*args_list)
-        return pprint.pformat(results)
+        return "`{}`".format(pprint.pformat(results))
 
     def get_help(self):
         return self._get_commands()
