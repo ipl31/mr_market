@@ -59,7 +59,7 @@ class MisterMarketBot:
         message_with_user_stripped = text.split(' ', 1)[1]
 
         if not self._is_message_command(message_with_user_stripped):
-            self._send_error_message(self, channel_id)
+            self._send_error_message(channel_id)
             return
         tokenized_command = message_with_user_stripped.split()
         skill = tokenized_command.pop()
