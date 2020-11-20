@@ -59,7 +59,7 @@ class MisterMarketBot:
         return False
 
     def _send_error_message(self, channel_id):
-        message = "I did not understand your command."
+        message = "*Sorry!* I did not understand your command."
         post_message(channel_id, message)
 
     def _send_message(self, channel_id, message):
