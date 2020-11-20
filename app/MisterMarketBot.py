@@ -58,6 +58,9 @@ class MisterMarketBot:
         message = "I did not understand your command."
         post_message(channel_id, message)
 
+    def _send_message(self, channel_id, message):
+        post_message(channel_id, message)
+
     def handle_slack_event(self, payload):
         event = payload.get("event", {})
         if self._is_payload_from_me(event):
@@ -74,6 +77,7 @@ class MisterMarketBot:
         if not self._is_message_command(message):
             self._send_error_message(channel_id)
             return
-        skill, command, args = self.parse_skill_command(message)
+        skill, command, args = self._parse_skill_command(message)
         logger.debug(f"tokenized command: {skill} {command} {args}")
-        self._run_skill_command(skill, command, args)
+        result = self._run_skill_command(skill, command, args)
+        self._send_message(channel_id, result)
