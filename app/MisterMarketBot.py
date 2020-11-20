@@ -29,6 +29,13 @@ class MisterMarketBot:
             return None
         return get_public_methods(self.skills[skill])
 
+    def _parse_skill_command(self, command_string):
+        command_list = command_string.split()
+        skill = command_list.pop(0)
+        command = command_list.pop(0)
+        args = command_list
+        return skill, command, args
+
     def _run_skill_command(self, skill, command, *args):
         if skill not in self._get_skills():
             raise KeyError(f"Unknown skill {skill}")
@@ -60,16 +67,13 @@ class MisterMarketBot:
         channel_id = event.get("channel")
         text = event.get("text")
         logger.debug(f"message text: {text}")
-        message_with_user_stripped = text.split(' ', 1)[1]
-        logger.debug((f"message with user stripped: "
-                      f"{message_with_user_stripped} "))
+        # strip @user from message
+        message = text.split(' ', 1)[1]
+        logger.debug(f"message: {message}")
 
-        if not self._is_message_command(message_with_user_stripped):
+        if not self._is_message_command(message):
             self._send_error_message(channel_id)
             return
-        tokenized_command = message_with_user_stripped.split()
-        skill = tokenized_command.pop()
-        command = tokenized_command.pop()
-        args = tokenized_command
+        skill, command, args = self.parse_skill_command(message)
         logger.debug(f"tokenized command: {skill} {command} {args}")
         self._run_skill_command(skill, command, args)
