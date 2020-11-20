@@ -28,7 +28,7 @@ class MisterMarketBot:
 
     def _run_skill_command(self, skill, command, *args):
         if skill not in self._get_skills():
-            raise KeyError("Unknown skill")
+            raise KeyError(f"Unknown skill {skill}")
         method = getattr(self.skills[skill], command)
         result = method(*args)
         return result
