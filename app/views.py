@@ -25,7 +25,7 @@ def hello():
     return "Hello"
 
 
-@slack_events_adapter.on("message")
+@slack_events_adapter.on("app_mention")
 def handle_message(payload):
     bot_id = slack_client.api_call("auth.test")['user_id']
     bot = MisterMarketBot(IexStockSkill(), bot_id)
