@@ -1,7 +1,10 @@
 import os
+import logging
 from .helpers import get_public_methods, post_message
 from slack import WebClient
 
+
+logger = logging.getLogger(__name__)
 # TODO: Centralize client code in a module
 client_token = os.environ.get("SLACK_TOKEN")
 slack_client = WebClient(token=client_token)
@@ -56,7 +59,10 @@ class MisterMarketBot:
         # user_id = payload.get("user")
         channel_id = event.get("channel")
         text = event.get("text")
+        logger.debug(f"message text: {text}")
         message_with_user_stripped = text.split(' ', 1)[1]
+        logger.debug((f"message with user stripped: "
+                      f"{message_with_user_stripped} "))
 
         if not self._is_message_command(message_with_user_stripped):
             self._send_error_message(channel_id)
@@ -65,4 +71,5 @@ class MisterMarketBot:
         skill = tokenized_command.pop()
         command = tokenized_command.pop()
         args = tokenized_command
+        logger.debug(f"tokenized command: {skill} {command} {args}")
         self._run_skill_command(skill, command, args)
