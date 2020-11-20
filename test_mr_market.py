@@ -64,9 +64,10 @@ def test_MisterMarketBot_get_skills_commands():
 
 
 def test_MisterMarketBot_parse_skill_command():
-    skill, command, args = bot._parse_skill_command("bah get_bah param1 param2")
-    assert skill == "bah" 
-    assert command == "get_bah" 
+    skill, command, args = \
+            bot._parse_skill_command("bah get_bah param1 param2")
+    assert skill == "bah"
+    assert command == "get_bah"
     assert args == ["param1", "param2"]
 
 
