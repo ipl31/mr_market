@@ -1,7 +1,7 @@
 import os
 import logging
-from .helpers import get_public_methods, post_message
 from slack import WebClient
+from .helpers import post_message
 
 
 logger = logging.getLogger(__name__)
@@ -16,20 +16,26 @@ class MisterMarketBot:
     bot_id = None
 
     def __init__(self, skills, bot_id):
-        """ skills: {"prefix": object} """
-        # TODO: Check we are not overwriting skills
-        self.skills.update(skills)
         self.bot_id = bot_id
 
+        if isinstance(skills, list):
+            for skill in skills:
+                new_skill = {skill.skill_id: skill}
+                self.skills.update(new_skill)
+            return
+
+        new_skill = {skills.skill_id: skills}
+        self.skills.update(new_skill)
+
     def _get_skills(self):
-        return list(self.skills.keys())
+        return self.skills
 
     def _get_skill_commands(self, skill):
         if skill not in self.skills:
             return None
-        return get_public_methods(self.skills[skill])
+        return self.skills[skill].get_commands()
 
-    def _parse_skill_command(self, command_string):
+    def _parse_command(self, command_string):
         command_list = command_string.split()
         skill = command_list.pop(0)
         command = command_list.pop(0)
@@ -39,13 +45,11 @@ class MisterMarketBot:
     def _run_skill_command(self, skill, command, *args):
         if skill not in self._get_skills():
             raise KeyError(f"Unknown skill {skill}")
-        method = getattr(self.skills[skill], command)
-        result = method(*args)
-        return result
+        return self.skills[skill].execute(command, *args)
 
-    def _is_message_command(self, message):
-        maybe_command = message.split()[0]
-        if maybe_command in self.skills:
+    def _is_skill_message(self, message):
+        maybe_skill = message.split()[0]
+        if maybe_skill in self.skills:
             return True
         return False
 
@@ -74,7 +78,7 @@ class MisterMarketBot:
         message = text.split(' ', 1)[1]
         logger.debug(f"message: {message}")
 
-        if not self._is_message_command(message):
+        if not self._is_skill_message(message):
             self._send_error_message(channel_id)
             return
         skill, command, args = self._parse_skill_command(message)

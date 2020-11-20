@@ -1,6 +1,7 @@
 from app import app
 from app import helpers
 from app.MisterMarketBot import MisterMarketBot
+from app.TestSkill import TestSkill
 
 
 def test_index():
@@ -36,14 +37,13 @@ class barSkill():
         return [param, "bar"]
 
 
-skills = {"foo": fooSkill, "bar": barSkill}
 bot_id = 'abc123'
-bot = MisterMarketBot(skills, bot_id)
+bot = MisterMarketBot(TestSkill(), bot_id)
 
 
 def test_MisterMarketBot_is_message_command():
-    assert bot._is_message_command("bar") is True
-    assert bot._is_message_command("blah") is False
+    assert bot._is_skill_message("test") is True
+    assert bot._is_skill_message("blah") is False
 
 
 def test_MisterMarketBot_is_payload_from_me():
@@ -52,28 +52,23 @@ def test_MisterMarketBot_is_payload_from_me():
 
 
 def test_MisterMarketBot_get_skills():
-    assert "foo" in bot._get_skills()
-    assert "bar" in bot._get_skills()
+    assert "test" in bot._get_skills()
 
 
 def test_MisterMarketBot_get_skills_commands():
-    assert "get_foo" in bot._get_skill_commands("foo")
-    assert "get_bar" in bot._get_skill_commands("bar")
-    assert "get_bar_with_param" in bot._get_skill_commands("bar")
-    assert "get_foo" not in bot._get_skill_commands("bar")
+    assert "test_command" in bot._get_skill_commands("test")
 
 
-def test_MisterMarketBot_parse_skill_command():
+def test_MisterMarketBot_parse_command():
     skill, command, args = \
-            bot._parse_skill_command("bah get_bah param1 param2")
-    assert skill == "bah"
-    assert command == "get_bah"
+            bot._parse_command("test test_command param1 param2")
+    assert skill == "test"
+    assert command == "test_command"
     assert args == ["param1", "param2"]
 
 
 def test_MisterMarketBot_run_skill_command():
-    result = bot._run_skill_command("foo", "get_foo")
-    assert result == "foo"
-    result = bot._run_skill_command("bar", "get_bar_with_param",  "baz")
-    assert "bar" in result
+    result = bot._run_skill_command("test", "test_command")
+    assert "test_execute" in result
+    result = bot._run_skill_command("test", "test_command",  "baz")
     assert "baz" in result

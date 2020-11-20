@@ -1,7 +1,7 @@
 import logging
 import os
-from iexfinance.stocks import Stock
 from . import app
+from .iex_skills import IexStockSkill
 from .MisterMarketBot import MisterMarketBot
 from slackeventsapi import SlackEventAdapter
 from slack import WebClient
@@ -28,6 +28,5 @@ def hello():
 @slack_events_adapter.on("message")
 def handle_message(payload):
     bot_id = slack_client.api_call("auth.test")['user_id']
-    skills = {"stock": Stock}
-    bot = MisterMarketBot(skills, bot_id)
+    bot = MisterMarketBot(IexStockSkill(), bot_id)
     bot.handle_slack_event(payload)
