@@ -16,12 +16,13 @@ class IexStockSkill(ISkill):
         return "stock"
 
     def execute(self, command, *args):
-        stock = Stock(*args)
+        args_list = list(*args)
+        stock = Stock(args_list.pop[0])
         if command == "help":
             return self._get_commands()
         if command not in self._get_commands():
             return "error"
-        return getattr(stock, command)(*args)
+        return getattr(stock, command)(*args_list)
 
     def get_help(self):
         return self._get_commands()
