@@ -81,7 +81,7 @@ class MisterMarketBot:
         if not self._is_skill_message(message):
             self._send_error_message(channel_id)
             return
-        skill, command, args = self._parse_skill_command(message)
+        skill, command, args = self._parse_command(message)
         logger.debug(f"tokenized command: {skill} {command} {args}")
         result = self._run_skill_command(skill, command, args)
         self._send_message(channel_id, result)
