@@ -17,7 +17,7 @@ class IexStockSkill(ISkill):
 
     def execute(self, command, *args):
         args_list = list(*args)
-        stock = Stock(args_list.pop[0])
+        stock = Stock(args_list.pop()[0])
         if command == "help":
             return self._get_commands()
         if command not in self._get_commands():
