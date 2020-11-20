@@ -1,3 +1,4 @@
+import pprint
 from .helpers import get_public_methods
 from .ISkill import ISkill
 from iexfinance.stocks import Stock
@@ -22,7 +23,8 @@ class IexStockSkill(ISkill):
             return self._get_commands()
         if command not in self._get_commands():
             return "error"
-        return getattr(stock, command)(*args_list)
+        results = getattr(stock, command)(*args_list)
+        return pprint.pformat(results)
 
     def get_help(self):
         return self._get_commands()
