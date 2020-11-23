@@ -29,13 +29,17 @@ class IexStockSkill(ISkill):
     def execute(self, command, *args):
         msg = f"received command: {command} args:{args}"
         logger.debug(msg)
-        args_list = list(*args)
-        stock = Stock(args_list.pop()[0])
         if command == HELP_COMMAND:
-            return self._get_commands()
+            commands = []
+            commands = [f"`{cmd}`" for cmd in self._get_commands()]
+            return ' '.join(commands)
         if command not in self._get_commands():
-            msg = f"I don't know the command: {command}"
+            msg = f"I don't know the command: `{command}`"
             return msg
+        args_list = list(*args)
+        logger.debug(f"args list {args_list}")
+        stock = Stock(args_list.pop(0))
+        logger.debug(f"symbol {stock.symbols}")
         results = getattr(stock, command)(*args_list)
         return "`{}`".format(pprint.pformat(results))
 
