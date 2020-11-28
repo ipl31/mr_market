@@ -1,28 +1,9 @@
-from app import app
-from app import helpers
 from app.MisterMarketBot import MisterMarketBot
 from app.TestSkill import TestSkill
 
 
-def test_index():
-    client = app.test_client()
-    response = client.get('/', content_type='html/text')
-    assert response.status_code == 200
-
-
-def test_404():
-    client = app.test_client()
-    response = client.get('/asdasdasda', content_type='html/text')
-    assert response.status_code == 404
-
-
-def test_create_message_block():
-    text = "123abc!"
-    message_block = helpers.create_message_block(text)
-    assert "123abc!" in message_block['text']['text']
-
 bot_id = 'abc123'
-bot = MisterMarketBot(TestSkill(), bot_id)
+bot = MisterMarketBot(TestSkill() )
 
 def test_MisterMarketBot_is_skill_message():
     assert bot._is_skill_message("test") is True
