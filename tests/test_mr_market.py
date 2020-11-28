@@ -21,35 +21,12 @@ def test_create_message_block():
     message_block = helpers.create_message_block(text)
     assert "123abc!" in message_block['text']['text']
 
-
-class fooSkill():
-
-    def get_foo():
-        return "foo"
-
-
-class barSkill():
-
-    def get_bar():
-        return "bar"
-
-    def get_bar_with_param(param):
-        return [param, "bar"]
-
-
 bot_id = 'abc123'
 bot = MisterMarketBot(TestSkill(), bot_id)
 
-
-def test_MisterMarketBot_is_message_command():
+def test_MisterMarketBot_is_skill_message():
     assert bot._is_skill_message("test") is True
     assert bot._is_skill_message("blah") is False
-
-
-def test_MisterMarketBot_is_payload_from_me():
-    assert bot._is_payload_from_me({"user": "123"}) is False
-    assert bot._is_payload_from_me({"user": bot_id}) is True
-
 
 def test_MisterMarketBot_get_skills():
     assert "test" in bot._get_skills()
