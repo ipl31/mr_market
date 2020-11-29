@@ -1,7 +1,9 @@
-from .ISkill import ISkill
+from mister_market.ISkill import ISkill
 
 
 class TestSkill(ISkill):
+
+    __test__ = False
 
     def __init__(self):
         pass
