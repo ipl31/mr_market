@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.debug("Staring python logger in main.py")
 
-token = os.environ.get("SLACK_BOT_TOKEN"),
+token = os.environ.get("SLACK_BOT_TOKEN")
 signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
 
 app = App(
