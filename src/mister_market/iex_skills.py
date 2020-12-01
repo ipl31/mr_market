@@ -1,9 +1,12 @@
+"""
+Classes to provide bot skills for IEX API calls.
+"""
 import logging
 import pprint
-from .helpers import get_public_methods
-from .ISkill import ISkill
 from iexfinance.stocks import Stock
 from iexfinance.utils.exceptions import IEXQueryError
+from .helpers import get_public_methods
+from .ISkill import ISkill
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -13,11 +16,14 @@ IEX_STOCK_SKILL_ID = "stock"
 
 
 class IexStockSkill(ISkill):
+    """ IexStockSkill is an ISkill impl that provides the ability
+    to execute commands on instances of the Stock class from
+    the iex_finance module. It does this by providing a way to map
+    method names on Stock() to command strings.
+    """
 
-    def __init__(self):
-        pass
-
-    def _get_commands(self):
+    @staticmethod
+    def _get_commands():
         commands = get_public_methods(Stock)
         commands.append(HELP_COMMAND)
         return commands
@@ -27,8 +33,8 @@ class IexStockSkill(ISkill):
         return IEX_STOCK_SKILL_ID
 
     def _execute(self, command, *args):
-        msg = f"received command: {command} args:{args}"
-        logger.debug(msg)
+        msg = "received command: %s args:%s"
+        logger.debug(msg, command, args)
         if command == HELP_COMMAND:
             commands = []
             commands = [f"`{cmd}`" for cmd in self._get_commands()]
@@ -37,20 +43,21 @@ class IexStockSkill(ISkill):
             msg = f"I don't know the command: `{command}`"
             return msg
         args_list = list(*args)
-        logger.debug(f"args list {args_list}")
+        logger.debug("args list: %s", args_list)
         stock = Stock(args_list.pop(0))
-        logger.debug(f"symbol {stock.symbols}")
+        logger.debug("symbol %s", stock.symbols)
         method = getattr(stock, command)
-        results = method(*args_list)
-        return "`{}`".format(pprint.pformat(results))
+        result = method(*args_list)
+        return "`{}`".format(pprint.pformat(result))
 
     def execute(self, command, *args):
         try:
-            result = self._execute(self, command, *args)
+            result = self._execute(command, *args)
             return result
         except IEXQueryError:
-            msg = f"Bad query, check symbol: {command} {args}"
-            logger.exception(msg)
+            logger.exception("IEX query failed %s %s",
+                             command, args)
+            msg = f"IEX error, check symbol is valid: {args}"
             return msg
 
     def get_help(self):
