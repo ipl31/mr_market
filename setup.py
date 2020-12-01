@@ -71,6 +71,6 @@ setup(
         'pytest-runner',
     ],
     entry_points={
-        'console_scripts': ['main = mister_market:main'],
+        'console_scripts': ['mister_market = mister_market.main:main'],
     },
 )

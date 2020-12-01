@@ -1,4 +1,4 @@
 from .events import *
 
-if __name__ == '__main__':
+def main():
     app.start(port=5000)
