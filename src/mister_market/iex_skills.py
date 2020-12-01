@@ -3,7 +3,7 @@ import pprint
 from .helpers import get_public_methods
 from .ISkill import ISkill
 from iexfinance.stocks import Stock
-
+from iexfinance.utils.exceptions import IEXQueryError
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class IexStockSkill(ISkill):
     def skill_id(self):
         return IEX_STOCK_SKILL_ID
 
-    def execute(self, command, *args):
+    def _execute(self, command, *args):
         msg = f"received command: {command} args:{args}"
         logger.debug(msg)
         if command == HELP_COMMAND:
@@ -40,8 +40,18 @@ class IexStockSkill(ISkill):
         logger.debug(f"args list {args_list}")
         stock = Stock(args_list.pop(0))
         logger.debug(f"symbol {stock.symbols}")
-        results = getattr(stock, command)(*args_list)
+        method = getattr(stock, command)
+        results = method(*args_list)
         return "`{}`".format(pprint.pformat(results))
+
+    def execute(self, command, *args):
+        try:
+            result = self._execute(self, command, *args)
+            return result
+        except IEXQueryError:
+            msg = f"Bad query, check symbol: {command} {args}"
+            logger.exception(msg)
+            return msg
 
     def get_help(self):
         return self._get_commands()
