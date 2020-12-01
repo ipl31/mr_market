@@ -5,7 +5,8 @@ from iexfinance.utils.exceptions import IEXQueryError
 
 @pytest.fixture
 def skill():
-    return iex_skills.IexStockSkill()
+    skill = iex_skills.IexStockSkill()
+    return skill
 
 
 def test_skill_id(skill):
@@ -43,5 +44,5 @@ def test_bad_symbol_raises(skill):
 
 def test_bad_symbol_error_msg(skill):
     bad_symbol = "asdasdasdasdadas"
-    assert "Bad query" in skill.execute("get_price",
-                                        [bad_symbol])
+    assert "check symbol" in skill.execute("get_price",
+                                           [bad_symbol])
