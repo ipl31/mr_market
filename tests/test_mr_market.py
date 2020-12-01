@@ -7,6 +7,7 @@ from TestSkill import TestSkill
 def bot():
     return MisterMarketBot(TestSkill())
 
+
 def test_is_skill_message(bot):
     assert bot._is_skill_message("test") is True
     assert bot._is_skill_message("blah") is False
@@ -34,7 +35,7 @@ def test_run_skill_command(bot):
     result = bot._run_skill_command("test", "test_command",  "baz")
     assert "baz" in result
 
+
 def test_handle_slack_message(bot):
     result = bot.handle_slack_message("not a command")
     assert "I do not understand your command" in result
-

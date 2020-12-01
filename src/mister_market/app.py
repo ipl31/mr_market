@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 from slack_bolt import App
 
 

@@ -1,4 +1,3 @@
-import os
 
 
 def get_public_methods(object):

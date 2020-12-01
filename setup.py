@@ -3,8 +3,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import io
-import re
 from glob import glob
 from os.path import abspath
 from os.path import basename
@@ -17,7 +15,7 @@ from setuptools import setup
 
 
 this_directory = abspath(dirname(__file__))
-with open (join(this_directory, 'README.md'), encoding='utf-8') as f:
+with open(join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
@@ -26,7 +24,7 @@ setup(
     version='0.1',
     license='Apache License 2.0',
     description='A slackbot.',
-    long_description = long_description,
+    long_description=long_description,
     author='Ken Caruso',
     author_email='ken@ipl31.net',
     url='https://github.com/ipl31/mr_market',
@@ -36,7 +34,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     classifiers=[
-        # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
+        # complete classifier list:
+        # http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Financial and Insurance Industry',
         'License :: OSI Approved :: Apache Software License',
@@ -54,8 +53,10 @@ setup(
         'Topic :: Communications :: Chat',
     ],
     project_urls={
-        'Changelog': 'https://github.com/ipl31/mr_market/blob/master/CHANGELOG.rst',
-        'Issue Tracker': 'https://github.com/ipl31/mr_market/issues',
+        'Changelog':
+            'https://github.com/ipl31/mr_market/blob/master/CHANGELOG.rst',
+        'Issue Tracker':
+            'https://github.com/ipl31/mr_market/issues',
     },
     keywords=[
         'slack', 'bot', 'stocks'
