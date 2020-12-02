@@ -64,7 +64,8 @@ setup(
     python_requires='>=3.5',
     install_requires=[
         'slack-bolt>=1.2.0a2',
-        'iexfinance>=0.4.3'
+        'iexfinance>=0.4.3',
+        'fredapi>=0.4.2'
     ],
     extras_require={
     },
