@@ -1,49 +1,33 @@
+# import commands to register them with PluginBase
+from . import stock_commands # noqa ignore=F405
+from .plugin_base import PluginBase
 
 
 class MisterMarketBot:
 
-    skills = {}
+    plugins = []
 
-    def __init__(self, skills):
-        if isinstance(skills, list):
-            for skill in skills:
-                new_skill = {skill.skill_id: skill}
-                self.skills.update(new_skill)
-            return
-
-        new_skill = {skills.skill_id: skills}
-        self.skills.update(new_skill)
-
-    def _get_skills(self):
-        return self.skills
-
-    def _get_skill_commands(self, skill):
-        if skill not in self.skills:
-            return None
-        return self.skills[skill].get_commands()
+    def __init__(self):
+        self.plugins = PluginBase().subclasses
+        if not len(set(self.plugins)) == len(self.plugins):
+            raise Exception("Plugin command collision")
 
     def _parse_command(self, command_string):
         command_list = command_string.split()
-        skill = command_list.pop(0)
         command = command_list.pop(0)
-        args = command_list
-        return skill, command, args
+        return command, command_list
 
-    def _run_skill_command(self, skill, command, *args):
-        if skill not in self._get_skills():
-            raise KeyError(f"Unknown skill {skill}")
-        return self.skills[skill].execute(command, *args)
+    def _is_command(self, command):
+        return any([command == p.command for p in self.plugins])
 
-    def _is_skill_message(self, message):
-        maybe_skill = message.split()[0]
-        if maybe_skill in self.skills:
-            return True
-        return False
+    def _get_plugin(self, command):
+        for plugin in self.plugins:
+            if command == plugin.command:
+                return plugin()
+        return None
 
     def handle_slack_message(self, message):
-        message = message.split(' ', 1)[1]
-        if not self._is_skill_message(message):
-            return "I do not understand your command."
-        skill, command, args = self._parse_command(message)
-        result = self._run_skill_command(skill, command, args)
-        return result
+        command, args = self._parse_command(message)
+        if not self._is_command(command):
+            return f"I do not understand your command: `{command}`"
+        return self._get_plugin(command).run(*args)
