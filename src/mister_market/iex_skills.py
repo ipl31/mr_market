@@ -52,12 +52,13 @@ class IexStockSkill(ISkill):
 
     def execute(self, command, *args):
         try:
-            result = self._execute(command, *args)
+            result = self._execute(command, args)
             return result
         except IEXQueryError:
             logger.exception("IEX query failed %s %s",
                              command, args)
-            msg = f"IEX error, check symbol is valid: {args}"
+            maybe_symbol = args[0]
+            msg = f"IEX error, check symbol is valid: {maybe_symbol}"
             return msg
 
     def get_help(self):
