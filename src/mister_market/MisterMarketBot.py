@@ -1,4 +1,5 @@
-from . import stock_commands
+# import commands to register them with PluginBase
+from . import stock_commands # noqa ignore=F405
 from .plugin_base import PluginBase
 
 
@@ -14,7 +15,7 @@ class MisterMarketBot:
     def _parse_command(self, command_string):
         command_list = command_string.split()
         command = command_list.pop(0)
-        return command, command_list 
+        return command, command_list
 
     def _is_command(self, command):
         return any([command == p.command for p in self.plugins])
