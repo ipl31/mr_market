@@ -1,5 +1,4 @@
 from .app import app
-from .iex_skills import IexStockSkill
 from .MisterMarketBot import MisterMarketBot
 
 
@@ -9,6 +8,6 @@ def handle_message(event, say):
     user = event['user']
     message = event.get("text")
     app.logger.info(f"User: {user} Message {message}")
-    bot = MisterMarketBot(IexStockSkill())
+    bot = MisterMarketBot()
     response = bot.handle_slack_message(message)
     say(response)
