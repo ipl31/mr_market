@@ -27,6 +27,8 @@ class MisterMarketBot:
         return None
 
     def handle_slack_message(self, message):
+        # Strip user id from message:
+        message = message.split(' ', 1)[1]
         command, args = self._parse_command(message)
         if not self._is_command(command):
             return f"I do not understand your command: `{command}`"
