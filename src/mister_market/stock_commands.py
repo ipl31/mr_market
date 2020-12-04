@@ -34,7 +34,15 @@ class QuoteCommand(PluginBase):
         header = HeaderBlock(text=f"Quote: {symbol}")
         blocks.append(header)
 
-        quote_keys = ['name', 'week52High', 'week52Low', 'volume']
+        quote_keys = ['companyName',
+                      'marketCap',
+                      'latestPrice',
+                      'volume',
+                      'avgTotalVolume',
+                      'peRatio',
+                      'week52High',
+                      'week52Low']
+
         for quote_key in quote_keys:
             value = quote[quote_key]
             blocks.append(DividerBlock())
