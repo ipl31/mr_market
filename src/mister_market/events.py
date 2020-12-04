@@ -12,5 +12,5 @@ def handle_message(event, say):
     app.logger.info(f"User: {user} Message {message}")
     bot = MisterMarketBot()
     response_blocks = bot.handle_slack_message(message)
-    msg = Message(channel=channel, blocks=response_blocks)
-    say(msg)
+    message = Message(channel=channel, blocks=response_blocks)
+    say(**message)
