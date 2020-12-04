@@ -71,29 +71,28 @@ class QuoteCommand(PluginBase):
         blocks.append(
                 HeaderBlock(
                     text=f"{symbol} - {name}"))
-        blocks.append(DividerBlock)
+        blocks.append(DividerBlock())
 
         blocks.append(
                 SectionBlock(
                     text=f"*Price:* {price} *--* *Prev. Close:* {prev_close}"))
-        blocks.append(DividerBlock)
+        blocks.append(DividerBlock())
 
         blocks.append(
                 SectionBlock(
                     text=(f"*Volume:* {volume} *--* "
                           f"*Avg Volume:* {avg_volume}")))
-        blocks.append(DividerBlock)
+        blocks.append(DividerBlock())
 
         blocks.append(
                 SectionBlock(
                     text=((f"*52 High:* {high52} *--* "
                            f"*52w Low:* {low52} *--* "))))
-        blocks.append(DividerBlock)
+        blocks.append(DividerBlock())
 
         blocks.append(
             SectionBlock(
                 text=f"*50 MA:* {avg50} *--* *200 MA:* {avg200}"))
-        blocks.append(DividerBlock)
 
         return blocks
 
