@@ -84,15 +84,13 @@ class PriceCommand(PluginBase):
         args = list(args)
         symbol = args.pop(0)
         symbol_err = f"Symbol `{symbol}` not found"
-
         if is_symbol_in_iex_universe(symbol):
             price = self._get_stock_price(symbol)
-            return f"`{symbol}` `{price}`"
+            return SectionBlock(text=f"`{symbol}` `{price}`")
         try:
             price = self._get_crypto_price(symbol)
             if price is None:
-                return symbol_err
-            return f"`{symbol}` `{price}`"
+                return SectionBlock(text=symbol_err)
+            return SectionBlock(text=f"`{symbol}` `{price}`")
         except IEXQueryError:
-            return symbol_err
-
+            return SectionBlock(text=symbol_err)
