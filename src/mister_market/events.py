@@ -7,10 +7,10 @@ from .MisterMarketBot import MisterMarketBot
 def handle_message(event, say):
     app.logger.debug(f"event: {event}")
     user = event['user']
-    channel_id = event['channel_id']
+    channel = event['channel']
     message = event.get("text")
     app.logger.info(f"User: {user} Message {message}")
     bot = MisterMarketBot()
     response_blocks = bot.handle_slack_message(message)
-    msg = Message(channel=channel_id, blocks=response_blocks)
+    msg = Message(channel=channel, blocks=response_blocks)
     say(msg)
