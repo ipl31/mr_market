@@ -43,17 +43,22 @@ class QuoteCommand(PluginBase):
         ytd = "{:.0%}".format(quote.get("ytdChange"))
 
         blocks.append(HeaderBlock(
-            text=f"{symbol} {name} price: ${price} P/E: {pe}"))
+            text=f"{symbol} - {name}"))
         blocks.append(DividerBlock())
 
         blocks.append(
                 SectionBlock(
-                    text=(f"market cap: {market_cap} "
-                          f"volume: {volume} avg: {avg_volume}")))
+                    text=f"*Price:* {price} - *P/E:* {pe}"))
+        blocks.append(DividerBlock())
+
+        blocks.append(
+                SectionBlock(
+                    text=(f"*Market cap:* {market_cap} - "
+                          f"*Volume:* {volume} - *Avg*: {avg_volume}")))
         blocks.append(DividerBlock())
 
         blocks.append(SectionBlock(
-            text=f"52w High: {high52} 52w Low: {low52} ytd: {ytd}"))
+            text=f"*52 High:* {high52} - *52w Low:* {low52} - *Ytd:* {ytd}"))
 
         return blocks
 
