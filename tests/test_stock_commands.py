@@ -7,6 +7,11 @@ def price_command():
     return stock_commands.PriceCommand()
 
 
+@pytest.fixture
+def quote_command():
+    return stock_commands.QuoteCommand()
+
+
 def test_is_symbol_in_iex_universe():
     aapl_result = stock_commands.is_symbol_in_iex_universe("AAPL")
     assert aapl_result is True

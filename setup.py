@@ -64,6 +64,7 @@ setup(
     python_requires='>=3.5',
     install_requires=[
         'slack-bolt>=1.2.0a2',
+        'slackblocks>=0.2.2',
         'iexfinance>=0.4.3'
     ],
     extras_require={
