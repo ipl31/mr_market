@@ -58,7 +58,7 @@ class QuoteCommand(PluginBase):
         blocks.append(DividerBlock())
 
         blocks.append(SectionBlock(
-            text=(f"*52 High:* {high52} *--* *52w Low:* {low52} *--*"
+            text=(f"*52 High:* {high52} *--* *52w Low:* {low52} *--* "
                   f"*Ytd:* {ytd}")))
 
         return blocks
