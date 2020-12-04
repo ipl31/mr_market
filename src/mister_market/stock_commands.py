@@ -36,7 +36,7 @@ class QuoteCommand(PluginBase):
 
         quote_keys = ['name', 'week52High', 'week52Low', 'volume']
         for quote_key in quote_keys:
-            value = quote_keys[quote_key]
+            value = quote[quote_key]
             blocks.append(DividerBlock())
             blocks.append(SectionBlock(text=f"*{quote_key}*: {value}"))
 
