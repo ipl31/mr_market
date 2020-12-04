@@ -1,4 +1,4 @@
-# import commands to register them with PluginBase
+from slackblocks import SectionBlock
 from . import stock_commands # noqa ignore=F405
 from .plugin_base import PluginBase
 
@@ -31,5 +31,6 @@ class MisterMarketBot:
         message = message.split(' ', 1)[1]
         command, args = self._parse_command(message)
         if not self._is_command(command):
-            return f"I do not understand your command: `{command}`"
+            text = f"I do not understand your command: `{command}`"
+            return SectionBlock(text=text)
         return self._get_plugin(command).run(*args)
