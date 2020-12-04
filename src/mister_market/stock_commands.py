@@ -30,23 +30,30 @@ class QuoteCommand(PluginBase):
     @staticmethod
     def _build_quote_msg_block(quote):
         blocks = []
+
         symbol = quote.get("symbol")
-        header = HeaderBlock(text=f"Quote: {symbol}")
-        blocks.append(header)
+        name = quote.get("companyName")
+        price = quote.get("latestPrice")
+        market_cap = quote.get("marketCap")
+        volume = quote.get("volume")
+        avg_volume = quote.get("avgTotalVolume")
+        pe = quote.get("peRatio")
+        high52 = quote.get("week52High")
+        low52 = quote.get("week52Low")
+        ytd = "{:.0%}".format(quote.get("ytdChange"))
 
-        quote_keys = ['companyName',
-                      'marketCap',
-                      'latestPrice',
-                      'volume',
-                      'avgTotalVolume',
-                      'peRatio',
-                      'week52High',
-                      'week52Low']
+        blocks.append(HeaderBlock(
+            text=f"{symbol} {name} price: ${price} P/E: {pe}"))
+        blocks.append(DividerBlock())
 
-        for quote_key in quote_keys:
-            value = quote[quote_key]
-            blocks.append(DividerBlock())
-            blocks.append(SectionBlock(text=f"*{quote_key}*: {value}"))
+        blocks.append(
+                SectionBlock(
+                    text=(f"market cap: {market_cap} "
+                          f"volume: {volume} avg: {avg_volume}")))
+        blocks.append(DividerBlock())
+
+        blocks.append(SectionBlock(
+            text=f"52w High: {high52} 52w Low: {low52} ytd: {ytd}"))
 
         return blocks
 
