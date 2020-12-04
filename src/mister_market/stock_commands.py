@@ -70,7 +70,7 @@ class QuoteCommand(PluginBase):
     def run(self, *args, **kwargs):
         args = list(args)
         symbol = args.pop(0)
-        symbol_err = f"Symbol `{symbol}` not found"
+        symbol_err = SectionBlock(text=f"Symbol `{symbol}` not found")
 
         if is_symbol_in_iex_universe(symbol):
             blocks = self._get_stock_quote_blocks(symbol)
