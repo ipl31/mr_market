@@ -16,7 +16,7 @@ def test_parse_command(bot):
 
 def test_handle_slack_message_bad_command(bot):
     result = bot.handle_slack_message("not a command")
-    assert "I do not understand your command" in result
+    assert "I do not understand your command" in result.text.text
 
 
 def test_handle_slack_message_btc(bot):
