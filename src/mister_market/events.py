@@ -1,3 +1,4 @@
+from slackblocks import Message
 from .app import app
 from .MisterMarketBot import MisterMarketBot
 
@@ -6,8 +7,10 @@ from .MisterMarketBot import MisterMarketBot
 def handle_message(event, say):
     app.logger.debug(f"event: {event}")
     user = event['user']
+    channel_id = event['channel_id']
     message = event.get("text")
     app.logger.info(f"User: {user} Message {message}")
     bot = MisterMarketBot()
-    response = bot.handle_slack_message(message)
-    say(response)
+    response_blocks = bot.handle_slack_message(message)
+    msg = Message(channel=channel_id, blocks=response_blocks)
+    say(msg)

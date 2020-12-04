@@ -21,11 +21,11 @@ def test_is_symbol_in_iex_universe():
 
 def test_price_command_stock(price_command):
     result = price_command.run('AAPL')
-    symbol, price = result.split()
+    symbol, price = result.text.text.split()
     assert "AAPL" in symbol
 
 
 def test_price_command_crypto(price_command):
     result = price_command.run('BTCUSD')
-    symbol, price = result.split()
+    symbol, price = result.text.text.split()
     assert "BTCUSD" in symbol
