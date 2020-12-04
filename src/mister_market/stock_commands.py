@@ -23,7 +23,7 @@ def get_fmp_quote(symbol):
     for dictionary in response.json():
         if dictionary['symbol'] == GOLD_COMM_SYMBOL:
             return dictionary
-    raise Exception("Quote not found in response")
+    raise Exception(f"Quote for {symbol} not found in response")
 
 
 def get_gold_price():
@@ -94,6 +94,8 @@ class QuoteCommand(PluginBase):
             SectionBlock(
                 text=f"*50 MA:* {avg50} *--* *200 MA:* {avg200}"))
         blocks.append(DividerBlock)
+
+        return blocks
 
     @staticmethod
     def _build_quote_msg_block(quote):
