@@ -18,6 +18,12 @@ def is_symbol_in_iex_universe(symbol):
     return False
 
 
+def commaify(data):
+    if data is None:
+        return data
+    return "{:,}".format(data)
+
+
 class QuoteCommand(PluginBase):
 
     command = "quote"
@@ -34,12 +40,12 @@ class QuoteCommand(PluginBase):
         symbol = quote.get("symbol")
         name = quote.get("companyName")
         price = quote.get("latestPrice")
-        market_cap = "{:,}".format(quote.get("marketCap"))
-        volume = "{:,}".format(quote.get("volume"))
-        avg_volume = "{:,}".format(quote.get("avgTotalVolume"))
-        pe = "{:,}".format(quote.get("peRatio"))
-        high52 = "{:,}".format(quote.get("week52High"))
-        low52 = "{:,}".format(quote.get("week52Low"))
+        market_cap = commaify(quote.get("marketCap"))
+        volume = commaify(quote.get("volume"))
+        avg_volume = commaify(quote.get("avgTotalVolume"))
+        pe = commaify(quote.get("peRatio"))
+        high52 = commaify(quote.get("week52High"))
+        low52 = commaify.format(quote.get("week52Low"))
         ytd = "{:.0%}".format(quote.get("ytdChange"))
 
         blocks.append(HeaderBlock(
