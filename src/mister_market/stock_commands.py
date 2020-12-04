@@ -45,7 +45,7 @@ class QuoteCommand(PluginBase):
         avg_volume = commaify(quote.get("avgTotalVolume"))
         pe = commaify(quote.get("peRatio"))
         high52 = commaify(quote.get("week52High"))
-        low52 = commaify.format(quote.get("week52Low"))
+        low52 = commaify(quote.get("week52Low"))
         ytd = "{:.0%}".format(quote.get("ytdChange"))
 
         blocks.append(HeaderBlock(
