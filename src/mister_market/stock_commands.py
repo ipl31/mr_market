@@ -34,12 +34,12 @@ class QuoteCommand(PluginBase):
         symbol = quote.get("symbol")
         name = quote.get("companyName")
         price = quote.get("latestPrice")
-        market_cap = quote.get("marketCap")
-        volume = quote.get("volume")
-        avg_volume = quote.get("avgTotalVolume")
-        pe = quote.get("peRatio")
-        high52 = quote.get("week52High")
-        low52 = quote.get("week52Low")
+        market_cap = "{:,}".format(quote.get("marketCap"))
+        volume = "{:,}".format(quote.get("volume"))
+        avg_volume = "{:,}".format(quote.get("avgTotalVolume"))
+        pe = "{:,}".format(quote.get("peRatio"))
+        high52 = "{:,}".format(quote.get("week52High"))
+        low52 = "{:,}".format(quote.get("week52Low"))
         ytd = "{:.0%}".format(quote.get("ytdChange"))
 
         blocks.append(HeaderBlock(
@@ -48,17 +48,18 @@ class QuoteCommand(PluginBase):
 
         blocks.append(
                 SectionBlock(
-                    text=f"*Price:* {price} - *P/E:* {pe}"))
+                    text=f"*Price:* {price} *--* *P/E:* {pe}"))
         blocks.append(DividerBlock())
 
         blocks.append(
                 SectionBlock(
-                    text=(f"*Market cap:* {market_cap} - "
-                          f"*Volume:* {volume} - *Avg*: {avg_volume}")))
+                    text=(f"*Market cap:* {market_cap} *--* "
+                          f"*Volume:* {volume} *--* *Avg*: {avg_volume}")))
         blocks.append(DividerBlock())
 
         blocks.append(SectionBlock(
-            text=f"*52 High:* {high52} - *52w Low:* {low52} - *Ytd:* {ytd}"))
+            text=(f"*52 High:* {high52} *--* *52w Low:* {low52} *--*"
+                  f"*Ytd:* {ytd}")))
 
         return blocks
 
