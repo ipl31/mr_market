@@ -48,6 +48,10 @@ def test_quote_command_gold(quote_command):
     assert isinstance(result[1], DividerBlock)
     assert isinstance(result[2], SectionBlock)
     assert "GCUSD" in result[0].text.text
+    # test both gold symbol alias and lowercase:
+    result = quote_command.run('xauusd')
+    assert "GCUSD" in result[0].text.text
+
 
 
 def test_price_command_stock(price_command):
