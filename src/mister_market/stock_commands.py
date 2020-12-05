@@ -6,6 +6,7 @@ from iexfinance.stocks import Stock
 from iexfinance.utils.exceptions import IEXQueryError
 from slackblocks import HeaderBlock, DividerBlock, SectionBlock
 from .plugin_base import PluginBase
+from .slack import BlockBuilder, MessageBuilder
 
 GOLD_ALIASES = ["GCUSD", "XAUUSD", "XAU"]
 GOLD_COMM_SYMBOL = "GCUSD"
@@ -55,8 +56,6 @@ class QuoteCommand(PluginBase):
 
     @staticmethod
     def _build_gold_quote_msg_block(quote):
-        blocks = []
-
         symbol = quote.get("symbol")
         name = quote.get("name")
         price = commaify(quote.get("price"))
@@ -68,33 +67,51 @@ class QuoteCommand(PluginBase):
         avg_volume = commaify(quote.get("avgVolume"))
         prev_close = commaify(quote.get("previousClose"))
 
-        blocks.append(
-                HeaderBlock(
-                    text=f"{symbol} - {name}"))
-        blocks.append(DividerBlock())
+        block_builder = BlockBuilder()
+        message_builder = MessageBuilder()
 
-        blocks.append(
-                SectionBlock(
-                    text=f"*Price:* {price} *--* *Prev. Close:* {prev_close}"))
-        blocks.append(DividerBlock())
+        message_builder.add_text(symbol)
+        message_builder.add_text("--")
+        message_builder.add_text(name)
+        block_builder.add_header_block(message_builder.product)
+        message_builder.reset()
+        block_builder.add_divider_block()
 
-        blocks.append(
-                SectionBlock(
-                    text=(f"*Volume:* {volume} *--* "
-                          f"*Avg Volume:* {avg_volume}")))
-        blocks.append(DividerBlock())
+        message_builder.add_bold_text("Price:")
+        message_builder.add_text(price)
+        message_builder.add_bold_text("--")
+        message_builder.add_bold_text("Prev Close")
+        message_builder.add_text(prev_close)
+        block_builder.add_section_block(message_builder.product)
+        message_builder.reset()
+        block_builder.add_divider_block()
 
-        blocks.append(
-                SectionBlock(
-                    text=((f"*52 High:* {high52} *--* "
-                           f"*52w Low:* {low52} *--* "))))
-        blocks.append(DividerBlock())
+        message_builder.add_bold_text("Volume:")
+        message_builder.add_text(volume)
+        message_builder.add_bold_text("--")
+        message_builder.add_bold_text("Avg Volume")
+        message_builder.add_text(avg_volume)
+        block_builder.add_section_block(message_builder.product)
+        message_builder.reset()
+        block_builder.add_divider_block()
 
-        blocks.append(
-            SectionBlock(
-                text=f"*50 MA:* {avg50} *--* *200 MA:* {avg200}"))
+        message_builder.add_bold_text("52 High")
+        message_builder.add_text(high52)
+        message_builder.add_bold_text("--")
+        message_builder.add_bold_text("52 Low")
+        message_builder.add_text(low52)
+        block_builder.add_section_block(message_builder.product)
+        message_builder.reset()
+        block_builder.add_divider_block()
 
-        return blocks
+        message_builder.add_bold_text("50 MA:")
+        message_builder.add_text(avg50)
+        message_builder.add_bold_text("--")
+        message_builder.add_bold_text("200 MA:")
+        message_builder.add_text(avg200)
+        block_builder.add_section_block(message_builder.product)
+
+        return block_builder.product
 
     @staticmethod
     def _build_quote_msg_block(quote):
@@ -145,17 +162,24 @@ class QuoteCommand(PluginBase):
     def run(self, *args, **kwargs):
         args = list(args)
         symbol = args.pop(0)
-        symbol_err = SectionBlock(text=f"Symbol `{symbol}` not found")
+
+        message_builder = MessageBuilder()
+        message_builder.add_text("Symbol")
+        message_builder.add_terminal_text(symbol)
+        message_builder.add_text("not found.")
+        block_builder = BlockBuilder()
+        block_builder.add_section_block(text=message_builder.product)
+        message_builder.reset()
+        error = block_builder.product
+        block_builder.reset()
 
         if symbol.lower() in [x.lower() for x in GOLD_ALIASES]:
-            blocks = self._get_gold_quote_blocks(GOLD_COMM_SYMBOL)
-            return blocks
+            return self._get_gold_quote_blocks(GOLD_COMM_SYMBOL)
 
         if is_symbol_in_iex_universe(symbol):
-            blocks = self._get_stock_quote_blocks(symbol)
-            return blocks
+            return self._get_stock_quote_blocks(symbol)
 
-        return symbol_err
+        return error
 
 
 class PriceCommand(PluginBase):
@@ -182,19 +206,44 @@ class PriceCommand(PluginBase):
     def run(self, *args, **kwargs):
         args = list(args)
         symbol = args.pop(0)
-        symbol_err = f"Symbol `{symbol}` not found"
+
+        # Error message blocks
+        message_builder = MessageBuilder()
+        message_builder.add_text("Symbol")
+        message_builder.add_terminal_text(symbol)
+        message_builder.add_text("not found.")
+        block_builder = BlockBuilder()
+        block_builder.add_section_block(text=message_builder.product)
+        message_builder.reset()
+        error = block_builder.product
+        block_builder.reset()
+
         if symbol.lower() in [x.lower() for x in GOLD_ALIASES]:
             symbol = GOLD_COMM_SYMBOL
             price = get_gold_price()
-            return SectionBlock(text=f"`{symbol}` `{price}`")
+            message_builder.add_terminal_text(symbol)
+            message_builder.add_terminal_text(price)
+            block_builder.add_section_block(message_builder.product)
+            message_builder.reset()
+            return block_builder.product
 
         if is_symbol_in_iex_universe(symbol):
             price = self._get_stock_price(symbol)
-            return SectionBlock(text=f"`{symbol}` `{price}`")
+            message_builder.add_terminal_text(symbol)
+            message_builder.add_terminal_text(price)
+            block_builder.add_section_block(message_builder.product)
+            message_builder.reset()
+            return block_builder.product
+
         try:
             price = self._get_crypto_price(symbol)
             if price is None:
-                return SectionBlock(text=symbol_err)
-            return SectionBlock(text=f"`{symbol}` `{price}`")
+                return error
+            message_builder.add_terminal_text(symbol)
+            message_builder.add_terminal_text(price)
+            block_builder.add_section_block(message_builder.product)
+            message_builder.reset()
+            return block_builder.product
+
         except IEXQueryError:
-            return SectionBlock(text=symbol_err)
+            return error

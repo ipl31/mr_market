@@ -1,6 +1,6 @@
-from slackblocks import SectionBlock
 from . import stock_commands # noqa ignore=F405
 from .plugin_base import PluginBase
+from .slack import BlockBuilder, MessageBuilder
 
 
 class MisterMarketBot:
@@ -30,7 +30,14 @@ class MisterMarketBot:
         # Strip user id from message:
         message = message.split(' ', 1)[1]
         command, args = self._parse_command(message)
+
         if not self._is_command(command):
-            text = f"I do not understand your command: `{command}`"
-            return SectionBlock(text=text)
+            message_builder = MessageBuilder()
+            block_builder = BlockBuilder()
+            message_builder.add_text("I don't understand your command:")
+            message_builder.add_terminal_text(command)
+            block_builder.add_section_block(message_builder.product)
+            message_builder.reset()
+            return block_builder.product
+
         return self._get_plugin(command).run(*args)

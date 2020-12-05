@@ -55,11 +55,11 @@ def test_quote_command_gold(quote_command):
 
 def test_price_command_stock(price_command):
     result = price_command.run('AAPL')
-    symbol, price = result.text.text.split()
+    symbol, price = result[0].text.text.split()
     assert "AAPL" in symbol
 
 
 def test_price_command_crypto(price_command):
     result = price_command.run('BTCUSD')
-    symbol, price = result.text.text.split()
+    symbol, price = result[0].text.text.split()
     assert "BTCUSD" in symbol
