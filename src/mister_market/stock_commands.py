@@ -17,7 +17,7 @@ def get_iex_symbol_universe():
 
 
 def get_fmp_quote(symbol):
-    key = os.environ.get("FMP_API_KEY")
+    key = os.environ["FMP_API_KEY"]
     url = "https://financialmodelingprep.com/api/v3/quote"
     response = requests.get(f"{url}/{symbol}?apikey={key}")
     for dictionary in response.json():
@@ -147,7 +147,7 @@ class QuoteCommand(PluginBase):
         symbol = args.pop(0)
         symbol_err = SectionBlock(text=f"Symbol `{symbol}` not found")
 
-        if symbol in GOLD_ALIASES:
+        if symbol.lower() in [x.lower() for x in GOLD_ALIASES]:
             blocks = self._get_gold_quote_blocks(GOLD_COMM_SYMBOL)
             return blocks
 
@@ -183,7 +183,7 @@ class PriceCommand(PluginBase):
         args = list(args)
         symbol = args.pop(0)
         symbol_err = f"Symbol `{symbol}` not found"
-        if symbol in GOLD_ALIASES:
+        if symbol.lower() in [x.lower() for x in GOLD_ALIASES]:
             symbol = GOLD_COMM_SYMBOL
             price = get_gold_price()
             return SectionBlock(text=f"`{symbol}` `{price}`")
