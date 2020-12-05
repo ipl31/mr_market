@@ -37,7 +37,6 @@ class MisterMarketBot:
             message_builder.add_text("I don't understand your command:")
             message_builder.add_terminal_text(command)
             block_builder.add_section_block(message_builder.product)
-            message_builder.reset()
             return block_builder.product
 
         return self._get_plugin(command).run(*args)

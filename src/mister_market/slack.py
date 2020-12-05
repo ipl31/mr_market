@@ -8,7 +8,9 @@ class MessageBuilder(object):
 
     @property
     def product(self):
-        return ' '.join(self.message)
+        product = ' '.join(self.message)
+        self.reset()
+        return product
 
     def reset(self):
         self.message = []
@@ -33,7 +35,9 @@ class BlockBuilder(object):
 
     @property
     def product(self):
-        return self.blocks
+        product = self.blocks
+        self.reset()
+        return product
 
     def reset(self):
         self.blocks = []

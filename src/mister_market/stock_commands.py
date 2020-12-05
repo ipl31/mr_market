@@ -74,7 +74,6 @@ class QuoteCommand(PluginBase):
         message_builder.add_text("--")
         message_builder.add_text(name)
         block_builder.add_header_block(message_builder.product)
-        message_builder.reset()
         block_builder.add_divider_block()
 
         message_builder.add_bold_text("Price:")
@@ -83,7 +82,6 @@ class QuoteCommand(PluginBase):
         message_builder.add_bold_text("Prev Close")
         message_builder.add_text(prev_close)
         block_builder.add_section_block(message_builder.product)
-        message_builder.reset()
         block_builder.add_divider_block()
 
         message_builder.add_bold_text("Volume:")
@@ -92,7 +90,6 @@ class QuoteCommand(PluginBase):
         message_builder.add_bold_text("Avg Volume")
         message_builder.add_text(avg_volume)
         block_builder.add_section_block(message_builder.product)
-        message_builder.reset()
         block_builder.add_divider_block()
 
         message_builder.add_bold_text("52 High")
@@ -101,7 +98,6 @@ class QuoteCommand(PluginBase):
         message_builder.add_bold_text("52 Low")
         message_builder.add_text(low52)
         block_builder.add_section_block(message_builder.product)
-        message_builder.reset()
         block_builder.add_divider_block()
 
         message_builder.add_bold_text("50 MA:")
@@ -169,9 +165,7 @@ class QuoteCommand(PluginBase):
         message_builder.add_text("not found.")
         block_builder = BlockBuilder()
         block_builder.add_section_block(text=message_builder.product)
-        message_builder.reset()
         error = block_builder.product
-        block_builder.reset()
 
         if symbol.lower() in [x.lower() for x in GOLD_ALIASES]:
             return self._get_gold_quote_blocks(GOLD_COMM_SYMBOL)
@@ -214,9 +208,7 @@ class PriceCommand(PluginBase):
         message_builder.add_text("not found.")
         block_builder = BlockBuilder()
         block_builder.add_section_block(text=message_builder.product)
-        message_builder.reset()
         error = block_builder.product
-        block_builder.reset()
 
         if symbol.lower() in [x.lower() for x in GOLD_ALIASES]:
             symbol = GOLD_COMM_SYMBOL
@@ -224,7 +216,6 @@ class PriceCommand(PluginBase):
             message_builder.add_terminal_text(symbol)
             message_builder.add_terminal_text(price)
             block_builder.add_section_block(message_builder.product)
-            message_builder.reset()
             return block_builder.product
 
         if is_symbol_in_iex_universe(symbol):
@@ -232,7 +223,6 @@ class PriceCommand(PluginBase):
             message_builder.add_terminal_text(symbol)
             message_builder.add_terminal_text(price)
             block_builder.add_section_block(message_builder.product)
-            message_builder.reset()
             return block_builder.product
 
         try:
@@ -242,7 +232,6 @@ class PriceCommand(PluginBase):
             message_builder.add_terminal_text(symbol)
             message_builder.add_terminal_text(price)
             block_builder.add_section_block(message_builder.product)
-            message_builder.reset()
             return block_builder.product
 
         except IEXQueryError:
