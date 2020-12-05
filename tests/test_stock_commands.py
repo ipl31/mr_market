@@ -53,7 +53,6 @@ def test_quote_command_gold(quote_command):
     assert "GCUSD" in result[0].text.text
 
 
-
 def test_price_command_stock(price_command):
     result = price_command.run('AAPL')
     symbol, price = result.text.text.split()
