@@ -1,24 +1,22 @@
-import pytest
-from mister_market.helpers import get_public_methods
+from mister_market import helpers
 
 
-@pytest.fixture
-def dummy_object():
-    class foo:
-
-        def __init__(self):
-            pass
-
-        def _private_foo(self):
-            pass
-
-        def public_foo(self):
-            pass
-
-    return foo()
+def test_get_fmp_quote():
+    result = helpers.get_fmp_quote('GCUSD')
+    assert 'GCUSD' in result['symbol']
 
 
-def test_get_public_methods(dummy_object):
-    assert "public_foo" in get_public_methods(dummy_object)
-    assert "__init__" not in get_public_methods(dummy_object)
-    assert "_private_foo" not in get_public_methods(dummy_object)
+def test_get_gold_price():
+    assert isinstance(helpers.get_gold_price(), float)
+
+
+def test_commaify():
+    assert "100,000" == helpers.commaify(100000)
+    assert "1,000,000.51" == helpers.commaify(1000000.51)
+
+
+def test_is_symbol_in_iex_universe():
+    aapl_result = helpers.is_symbol_in_iex_universe("AAPL")
+    assert aapl_result is True
+    fake_result = helpers.is_symbol_in_iex_universe("ASDAFASD")
+    assert fake_result is False
