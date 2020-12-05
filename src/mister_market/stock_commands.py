@@ -1,52 +1,13 @@
-import os
-import requests
-from functools import lru_cache
-from iexfinance import altdata, refdata
+from iexfinance import altdata
 from iexfinance.stocks import Stock
 from iexfinance.utils.exceptions import IEXQueryError
 from slackblocks import HeaderBlock, DividerBlock, SectionBlock
+from . import constants, helpers
 from .plugin_base import PluginBase
 from .slack import BlockBuilder, MessageBuilder
 
-GOLD_ALIASES = ["GCUSD", "XAUUSD", "XAU"]
-GOLD_COMM_SYMBOL = "GCUSD"
-
-
-@lru_cache(maxsize=1)
-def get_iex_symbol_universe():
-    return refdata.get_symbols()
-
-
-def get_fmp_quote(symbol):
-    key = os.environ["FMP_API_KEY"]
-    url = "https://financialmodelingprep.com/api/v3/quote"
-    response = requests.get(f"{url}/{symbol}?apikey={key}")
-    for dictionary in response.json():
-        if dictionary['symbol'] == GOLD_COMM_SYMBOL:
-            return dictionary
-    raise Exception(f"Quote for {symbol} not found in response")
-
-
-def get_gold_price():
-    quote = get_fmp_quote(GOLD_COMM_SYMBOL)
-    return quote['price']
-
-
-def is_symbol_in_iex_universe(symbol):
-    for entry in get_iex_symbol_universe():
-        if symbol == entry['symbol']:
-            return True
-    return False
-
-
-def commaify(data):
-    if data is None:
-        return data
-    return "{:,}".format(data)
-
 
 class QuoteCommand(PluginBase):
-
     command = "quote"
     usage = "quote $symbol"
     description = "Quote including data beyond price."
@@ -58,14 +19,14 @@ class QuoteCommand(PluginBase):
     def _build_gold_quote_msg_block(quote):
         symbol = quote.get("symbol")
         name = quote.get("name")
-        price = commaify(quote.get("price"))
-        high52 = commaify(quote.get("yearHigh"))
-        low52 = commaify(quote.get("yearLow"))
-        avg50 = commaify(quote.get("priceAvg50"))
-        avg200 = commaify(quote.get("priceAvg200"))
-        volume = commaify(quote.get("volume"))
-        avg_volume = commaify(quote.get("avgVolume"))
-        prev_close = commaify(quote.get("previousClose"))
+        price = helpers.commaify(quote.get("price"))
+        high52 = helpers.commaify(quote.get("yearHigh"))
+        low52 = helpers.commaify(quote.get("yearLow"))
+        avg50 = helpers.commaify(quote.get("priceAvg50"))
+        avg200 = helpers.commaify(quote.get("priceAvg200"))
+        volume = helpers.commaify(quote.get("volume"))
+        avg_volume = helpers.commaify(quote.get("avgVolume"))
+        prev_close = helpers.commaify(quote.get("previousClose"))
 
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
@@ -116,12 +77,12 @@ class QuoteCommand(PluginBase):
         symbol = quote.get("symbol")
         name = quote.get("companyName")
         price = quote.get("latestPrice")
-        market_cap = commaify(quote.get("marketCap"))
-        volume = commaify(quote.get("volume"))
-        avg_volume = commaify(quote.get("avgTotalVolume"))
-        pe = commaify(quote.get("peRatio"))
-        high52 = commaify(quote.get("week52High"))
-        low52 = commaify(quote.get("week52Low"))
+        market_cap = helpers.commaify(quote.get("marketCap"))
+        volume = helpers.commaify(quote.get("volume"))
+        avg_volume = helpers.commaify(quote.get("avgTotalVolume"))
+        pe = helpers.commaify(quote.get("peRatio"))
+        high52 = helpers.commaify(quote.get("week52High"))
+        low52 = helpers.commaify(quote.get("week52Low"))
         ytd = "{:.0%}".format(quote.get("ytdChange"))
 
         blocks.append(HeaderBlock(
@@ -129,14 +90,14 @@ class QuoteCommand(PluginBase):
         blocks.append(DividerBlock())
 
         blocks.append(
-                SectionBlock(
-                    text=f"*Price:* {price} *--* *P/E:* {pe}"))
+            SectionBlock(
+                text=f"*Price:* {price} *--* *P/E:* {pe}"))
         blocks.append(DividerBlock())
 
         blocks.append(
-                SectionBlock(
-                    text=(f"*Market cap:* {market_cap} *--* "
-                          f"*Volume:* {volume} *--* *Avg*: {avg_volume}")))
+            SectionBlock(
+                text=(f"*Market cap:* {market_cap} *--* "
+                      f"*Volume:* {volume} *--* *Avg*: {avg_volume}")))
         blocks.append(DividerBlock())
 
         blocks.append(SectionBlock(
@@ -146,7 +107,7 @@ class QuoteCommand(PluginBase):
         return blocks
 
     def _get_gold_quote_blocks(self, symbol):
-        quote = get_fmp_quote(symbol)
+        quote = helpers.get_fmp_quote(symbol)
         blocks = self._build_gold_quote_msg_block(quote)
         return blocks
 
@@ -167,17 +128,16 @@ class QuoteCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol.lower() in [x.lower() for x in GOLD_ALIASES]:
-            return self._get_gold_quote_blocks(GOLD_COMM_SYMBOL)
+        if symbol.lower() in [x.lower() for x in constants.GOLD_ALIASES]:
+            return self._get_gold_quote_blocks(constants.GOLD_COMM_SYMBOL)
 
-        if is_symbol_in_iex_universe(symbol):
+        if helpers.is_symbol_in_iex_universe(symbol):
             return self._get_stock_quote_blocks(symbol)
 
         return error
 
 
 class PriceCommand(PluginBase):
-
     command = "price"
     usage = "price $symbol"
     description = "Retrieve a price for a supported symbol."
@@ -210,15 +170,15 @@ class PriceCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol.lower() in [x.lower() for x in GOLD_ALIASES]:
-            symbol = GOLD_COMM_SYMBOL
-            price = get_gold_price()
+        if symbol.lower() in [x.lower() for x in constants.GOLD_ALIASES]:
+            symbol = constants.GOLD_COMM_SYMBOL
+            price = helpers.get_gold_price()
             message_builder.add_terminal_text(symbol)
             message_builder.add_terminal_text(price)
             block_builder.add_section_block(message_builder.product)
             return block_builder.product
 
-        if is_symbol_in_iex_universe(symbol):
+        if helpers.is_symbol_in_iex_universe(symbol):
             price = self._get_stock_price(symbol)
             message_builder.add_terminal_text(symbol)
             message_builder.add_terminal_text(price)
