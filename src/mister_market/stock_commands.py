@@ -139,29 +139,6 @@ class QuoteCommand(PluginBase):
 
         return block_builder.product
 
-    def _get_index_blocks(self):
-        data = helpers.get_fmp_indexes(brief=True)
-        blocks = self._get_index_blocks(data)
-        return blocks
-
-    def run(self, *args, **kwargs):
-        args = list(args)
-        symbol = args.pop(0)
-
-        message_builder = MessageBuilder()
-        message_builder.add_text("Error getting indexes.")
-        block_builder = BlockBuilder()
-        block_builder.add_section_block(text=message_builder.product)
-        error = block_builder.product
-
-        if symbol.lower() in [x.lower() for x in constants.GOLD_ALIASES]:
-            return self._get_gold_quote_blocks(constants.GOLD_COMM_SYMBOL)
-
-        if helpers.is_symbol_in_iex_universe(symbol):
-            return self._get_stock_quote_blocks(symbol)
-
-        return error
-
     @staticmethod
     def _build_quote_msg_block(quote):
         blocks = []
@@ -211,6 +188,7 @@ class QuoteCommand(PluginBase):
     def run(self, *args, **kwargs):
         args = list(args)
         symbol = args.pop(0)
+        symbol = symbol.upper()
 
         message_builder = MessageBuilder()
         message_builder.add_text("Symbol")
@@ -220,7 +198,7 @@ class QuoteCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol.lower() in [x.lower() for x in constants.GOLD_ALIASES]:
+        if symbol in constants.GOLD_ALIASES:
             return self._get_gold_quote_blocks(constants.GOLD_COMM_SYMBOL)
 
         if helpers.is_symbol_in_iex_universe(symbol):
@@ -252,6 +230,7 @@ class PriceCommand(PluginBase):
     def run(self, *args, **kwargs):
         args = list(args)
         symbol = args.pop(0)
+        symbol = symbol.upper()
 
         # Error message blocks
         message_builder = MessageBuilder()
@@ -262,7 +241,7 @@ class PriceCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol.lower() in [x.lower() for x in constants.GOLD_ALIASES]:
+        if symbol in constants.GOLD_ALIASES:
             symbol = constants.GOLD_COMM_SYMBOL
             price = helpers.get_gold_price()
             message_builder.add_terminal_text(symbol)
