@@ -21,19 +21,19 @@ class IndexesCommand(PluginBase):
         message_builder = MessageBuilder()
 
         for index in data:
-            symbol = data.get("symbol")
-            name = data.get("name")
-            price = data.get("price")
-            day_high = data.get("dayHigh")
-            day_low = data.get("dayLow")
+            symbol = index.get("symbol")
+            name = index.get("name")
+            price = helpers.commaify(index.get("price"))
+            day_high = helpers.commaify(index.get("dayHigh"))
+            day_low = helpers.commaify(index.get("dayLow"))
             # year_high = data.get("yearHigh")
             # year_low = data.get("yearLow")
             # price_avg_50 = data.get("priceAvg50")
             # price_avg_200 = data.get("priceAvg200")
             # volume = data.get("volume")
             # avg_volume = data.get("avgVolume")
-            open_price = data.get("open")
-            previous_close = data.get("previousClose")
+            # open_price = data.get("open")
+            previous_close = helpers.commaify(index.get("previousClose"))
 
             message_builder.add_text(symbol)
             message_builder.add_text("--")
@@ -63,16 +63,10 @@ class IndexesCommand(PluginBase):
 
     def _get_index_blocks(self):
         data = helpers.get_fmp_indexes(brief=True)
-        blocks = self._get_index_blocks(data)
+        blocks = self._build_index_msg_block(data)
         return blocks
 
     def run(self, *args, **kwargs):
-
-        message_builder = MessageBuilder()
-        message_builder.add_text("Error getting indexes.")
-        block_builder = BlockBuilder()
-        block_builder.add_section_block(text=message_builder.product)
-        error = block_builder.product
         return self._get_index_blocks()
 
 
@@ -181,7 +175,7 @@ class QuoteCommand(PluginBase):
         return blocks
 
     def _get_stock_quote_blocks(self, symbol):
-        quote = Stock(symbol).get_quote()
+        quote = Stock(symbol, output_format='json').get_quote()
         blocks = self._build_quote_msg_block(quote)
         return blocks
 
@@ -217,13 +211,13 @@ class PriceCommand(PluginBase):
 
     @staticmethod
     def _get_stock_price(symbol):
-        return Stock(symbol).get_price()
+        return Stock(symbol, output_format='json').get_price()
 
     @staticmethod
     def _get_crypto_price(symbol):
         if symbol.lower() == "btc":
             symbol = "BTCUSD"
-        quote = altdata.get_crypto_quote(symbol)
+        quote = altdata.get_crypto_quote(symbol, output_format='json')
         price = quote['latestPrice']
         return price
 

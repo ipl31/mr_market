@@ -25,7 +25,7 @@ def commaify(data):
 
 @lru_cache(maxsize=1)
 def get_iex_symbol_universe():
-    return refdata.get_symbols()
+    return refdata.get_symbols(output_format='json')
 
 
 def get_fmp_indexes(brief=True):

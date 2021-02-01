@@ -22,7 +22,7 @@ def test_handle_slack_message_bad_command(bot):
 def test_handle_slack_message_btc(bot):
     result = bot.handle_slack_message("@1234 price btc")
     symbol, price = result[0].text.text.split()
-    assert symbol[1:-1] == "btc"
+    assert symbol[1:-1] == "BTC"
     assert isinstance(float(price[1:-1]), float)
 
     result = bot.handle_slack_message("@1234 price BTC")
@@ -38,6 +38,11 @@ def test_handle_slack_message_btc(bot):
 
 def test_handle_slack_message_aapl(bot):
     result = bot.handle_slack_message("@1234 price AAPL")
+    symbol, price = result[0].text.text.split()
+    assert symbol[1:-1] == "AAPL"
+    assert isinstance(float(price[1:-1]), float)
+
+    result = bot.handle_slack_message("@1234 price aapl")
     symbol, price = result[0].text.text.split()
     assert symbol[1:-1] == "AAPL"
     assert isinstance(float(price[1:-1]), float)

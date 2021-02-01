@@ -1,4 +1,3 @@
-import os
 import requests
 from datetime import datetime, timedelta
 from iexfinance.stocks import get_historical_data
