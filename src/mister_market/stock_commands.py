@@ -7,6 +7,69 @@ from .plugin_base import PluginBase
 from .slack import BlockBuilder, MessageBuilder
 
 
+class IndexesCommand(PluginBase):
+    command = "indexes"
+    usage = "indexes or indexes all"
+    description = "Get index changes."
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def _build_index_msg_block(data):
+        block_builder = BlockBuilder()
+        message_builder = MessageBuilder()
+
+        for index in data:
+            symbol = index.get("symbol")
+            name = index.get("name")
+            price = helpers.commaify(index.get("price"))
+            day_high = helpers.commaify(index.get("dayHigh"))
+            day_low = helpers.commaify(index.get("dayLow"))
+            # year_high = data.get("yearHigh")
+            # year_low = data.get("yearLow")
+            # price_avg_50 = data.get("priceAvg50")
+            # price_avg_200 = data.get("priceAvg200")
+            # volume = data.get("volume")
+            # avg_volume = data.get("avgVolume")
+            # open_price = data.get("open")
+            previous_close = helpers.commaify(index.get("previousClose"))
+
+            message_builder.add_text(symbol)
+            message_builder.add_text("--")
+            message_builder.add_text(name)
+            block_builder.add_header_block(message_builder.product)
+            block_builder.add_divider_block()
+
+            message_builder.add_bold_text("Price:")
+            message_builder.add_text(price)
+            if price > previous_close:
+                message_builder.add_text(":arrow_upper_right")
+            if price < previous_close:
+                message_builder.add_text(":arrow_lower_right")
+            message_builder.add_bold_text("|")
+            message_builder.add_bold_text("Prev Close")
+            message_builder.add_text(previous_close)
+            message_builder.add_bold_text("|")
+            message_builder.add_bold_text("Day High:")
+            message_builder.add_text(day_high)
+            message_builder.add_bold_text("|")
+            message_builder.add_bold_text("Day Low:")
+            message_builder.add_text(day_low)
+            block_builder.add_section_block(message_builder.product)
+            block_builder.add_divider_block()
+
+        return block_builder.product
+
+    def _get_index_blocks(self):
+        data = helpers.get_fmp_indexes(brief=True)
+        blocks = self._build_index_msg_block(data)
+        return blocks
+
+    def run(self, *args, **kwargs):
+        return self._get_index_blocks()
+
+
 class QuoteCommand(PluginBase):
     command = "quote"
     usage = "quote $symbol"
@@ -112,13 +175,14 @@ class QuoteCommand(PluginBase):
         return blocks
 
     def _get_stock_quote_blocks(self, symbol):
-        quote = Stock(symbol).get_quote()
+        quote = Stock(symbol, output_format='json').get_quote()
         blocks = self._build_quote_msg_block(quote)
         return blocks
 
     def run(self, *args, **kwargs):
         args = list(args)
         symbol = args.pop(0)
+        symbol = symbol.upper()
 
         message_builder = MessageBuilder()
         message_builder.add_text("Symbol")
@@ -128,7 +192,7 @@ class QuoteCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol.lower() in [x.lower() for x in constants.GOLD_ALIASES]:
+        if symbol in constants.GOLD_ALIASES:
             return self._get_gold_quote_blocks(constants.GOLD_COMM_SYMBOL)
 
         if helpers.is_symbol_in_iex_universe(symbol):
@@ -147,19 +211,20 @@ class PriceCommand(PluginBase):
 
     @staticmethod
     def _get_stock_price(symbol):
-        return Stock(symbol).get_price()
+        return Stock(symbol, output_format='json').get_price()
 
     @staticmethod
     def _get_crypto_price(symbol):
         if symbol.lower() == "btc":
             symbol = "BTCUSD"
-        quote = altdata.get_crypto_quote(symbol)
+        quote = altdata.get_crypto_quote(symbol, output_format='json')
         price = quote['latestPrice']
         return price
 
     def run(self, *args, **kwargs):
         args = list(args)
         symbol = args.pop(0)
+        symbol = symbol.upper()
 
         # Error message blocks
         message_builder = MessageBuilder()
@@ -170,7 +235,7 @@ class PriceCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol.lower() in [x.lower() for x in constants.GOLD_ALIASES]:
+        if symbol in constants.GOLD_ALIASES:
             symbol = constants.GOLD_COMM_SYMBOL
             price = helpers.get_gold_price()
             message_builder.add_terminal_text(symbol)

@@ -13,7 +13,28 @@ def commaify(data):
 
 @lru_cache(maxsize=1)
 def get_iex_symbol_universe():
-    return refdata.get_symbols()
+    return refdata.get_symbols(output_format='json')
+
+
+def get_fmp_indexes(brief=True):
+    indexes_brief = ["^GSPC",
+                     "^IXIC",
+                     "^DJT",
+                     "^RUT",
+                     "^VIX",
+                     "^DX-Y.NYB",
+                     "^GVZ"]
+
+    key = os.environ["FMP_API_KEY"]
+    url = "https://financialmodelingprep.com/api/v3/quotes/index"
+    response = requests.get(f"{url}?apikey={key}")
+    if brief is True:
+        indexes = []
+        for dictionary in response.json():
+            if dictionary['symbol'] in indexes_brief:
+                indexes.append(dictionary)
+        return indexes
+    return response.json()
 
 
 def get_fmp_quote(symbol):

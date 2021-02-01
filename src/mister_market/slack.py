@@ -1,4 +1,7 @@
-from slackblocks import DividerBlock, HeaderBlock, SectionBlock
+from slackblocks import (DividerBlock,
+                         HeaderBlock,
+                         ImageBlock,
+                         SectionBlock)
 
 
 class MessageBuilder(object):
@@ -17,6 +20,9 @@ class MessageBuilder(object):
 
     def add_text(self, text):
         self.message.append(text)
+
+    def add_link(self, text):
+        self.message.append(f"<{text}>")
 
     def add_bold_text(self, text):
         self.message.append(f"*{text}*")
@@ -41,6 +47,9 @@ class BlockBuilder(object):
 
     def reset(self):
         self.blocks = []
+
+    def add_image_block(self, url, alt_text, title=None):
+        self.blocks.append(ImageBlock(url, alt_text, title))
 
     def add_divider_block(self):
         self.blocks.append(DividerBlock())

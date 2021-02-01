@@ -66,7 +66,8 @@ setup(
         'slack-bolt>=1.2.0a2',
         'slackblocks>=0.2.2',
         'iexfinance>=0.4.3',
-        'requests>=2.25.0'
+        'requests>=2.25.0',
+        'quickchart.io>=0.1.3'
     ],
     extras_require={
     },
