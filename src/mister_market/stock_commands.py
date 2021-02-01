@@ -26,31 +26,42 @@ class IndexesCommand(PluginBase):
             price = helpers.commaify(index.get("price"))
             day_high = helpers.commaify(index.get("dayHigh"))
             day_low = helpers.commaify(index.get("dayLow"))
+            change = helpers.commaify(index.get("changesPercentage"))
             # year_high = data.get("yearHigh")
             # year_low = data.get("yearLow")
             # price_avg_50 = data.get("priceAvg50")
-            # price_avg_200 = data.get("priceAvg200")
+            price_avg_200 = index.get("priceAvg200")
             # volume = data.get("volume")
             # avg_volume = data.get("avgVolume")
             # open_price = data.get("open")
             previous_close = helpers.commaify(index.get("previousClose"))
-            change = (index.get("previousClose") - index.get("price")) / \
-                index.get("previousClose")
-            formatted_change = "{0:.0%}".format(change)
 
-            message_builder.add_bold_text(name)
-            message_builder.add_bold_text("Price")
-            message_builder.add_text(price)
+            # Table headers
+            header_name = "| {:<30}".format("Index"[:30])
+            header_price = "| {:<20}".format("Price"[:20])
+            header_gains = "| {:<10}".format("Gainz"[:10])
+            day_high_low = "| {:<30}".format("Day H/L"[:20])
+            avg_200 = "| {:<20}".format("200 MA"[:10])
+
+            message_builder.add_bold_text(''.join([header_name,
+                                                  header_price,
+                                                  header_gains,
+                                                  day_high_low,
+                                                  avg_200]))
+            block_builder.add_section_block(message_builder.product)
+
             if price > previous_close:
-                message_builder.add_text(":arrow_upper_right:")
+                arrow = ":arrow_upper_right:"
             if price < previous_close:
-                message_builder.add_text(":arrow_lower_right:")
-            message_builder.add_text(formatted_change)
-            message_builder.add_bold_text("|")
-            message_builder.add_bold_text("Day High/Low:")
-            message_builder.add_text(day_high)
-            message_builder.add_bold_text("/")
-            message_builder.add_text(day_low)
+                arrow = ":arrow_lower_right:"
+            message_builder.add_bold_text("| {:<30}".format(name[:30]))
+            message_builder.add_text("| {:<20}".format(price[:20]))
+            gains = "| {} {}".format(change, arrow)
+            message_builder.add_text("| {:<10}".format(gains))
+            high_low = "| {} / {}".format(day_high, day_low)
+            message_builder.add_text("{:<30}".format(high_low))
+            message_builder.add_text("{:<20}".format(price_avg_200))
+
             block_builder.add_section_block(message_builder.product)
 
         return block_builder.product
