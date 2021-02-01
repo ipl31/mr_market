@@ -19,7 +19,6 @@ def get_iex_symbol_universe():
 def get_fmp_indexes(brief=True):
     indexes_brief = ["^GSPC",
                      "^IXIC",
-                     "^DJT",
                      "^RUT",
                      "^VIX",
                      "^DX-Y.NYB",

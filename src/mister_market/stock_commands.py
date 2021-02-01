@@ -38,8 +38,7 @@ class IndexesCommand(PluginBase):
             message_builder.add_text(symbol)
             message_builder.add_text("--")
             message_builder.add_text(name)
-            block_builder.add_header_block(message_builder.product)
-            block_builder.add_divider_block()
+            block_builder.add_section_block(message_builder.product)
 
             message_builder.add_bold_text("Price/Last Close:")
             message_builder.add_text(price)
@@ -55,7 +54,6 @@ class IndexesCommand(PluginBase):
             message_builder.add_bold_text("/")
             message_builder.add_text(day_low)
             block_builder.add_section_block(message_builder.product)
-            block_builder.add_divider_block()
 
         return block_builder.product
 
