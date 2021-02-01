@@ -25,11 +25,11 @@ class IndexesCommand(PluginBase):
         message_builder = MessageBuilder()
 
         # Table headers
-        header_name = "| {:<10}".format("Index"[:30])
+        header_name = "| {:<10}".format("Index"[:10])
         header_price = "| {:<20}".format("Price"[:20])
         header_gains = "| {:<10}".format("Gainz"[:10])
-        day_high_low = "| {:<30}".format("Day H/L"[:20])
-        avg_200 = "| {:<20}".format("200 MA"[:10])
+        day_high_low = "| {:<30}".format("Day H/L"[:30])
+        avg_200 = "| {:<20}".format("200 MA"[:20])
 
         message_builder.add_bold_text(''.join([header_name,
                                                header_price,
@@ -61,7 +61,7 @@ class IndexesCommand(PluginBase):
                 arrow = DOWN_ARROW
             message_builder.add_bold_text("{:<10}".format(symbol[:10]))
             message_builder.add_text("{:<20}".format(price[:20]))
-            gains = "{} {}".format(change, arrow)
+            gains = "{}% {}".format(change, arrow)
             message_builder.add_text("{:<10}".format(gains))
             high_low = "{} / {}".format(day_high, day_low)
             message_builder.add_text("{:<30}".format(high_low))
