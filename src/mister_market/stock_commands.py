@@ -25,7 +25,7 @@ class IndexesCommand(PluginBase):
         message_builder = MessageBuilder()
 
         # Table headers
-        header_name = "| {:<30}".format("Index"[:30])
+        header_name = "| {:<10}".format("Index"[:30])
         header_price = "| {:<20}".format("Price"[:20])
         header_gains = "| {:<10}".format("Gainz"[:10])
         day_high_low = "| {:<30}".format("Day H/L"[:20])
@@ -39,8 +39,8 @@ class IndexesCommand(PluginBase):
         block_builder.add_section_block(message_builder.product)
 
         for index in data:
-            # symbol = index.get("symbol")
-            name = index.get("name")
+            symbol = index.get("symbol")
+            # name = index.get("name")
             price = helpers.commaify(index.get("price"))
             day_high = helpers.commaify(index.get("dayHigh"))
             day_low = helpers.commaify(index.get("dayLow"))
@@ -59,7 +59,7 @@ class IndexesCommand(PluginBase):
                 arrow = UP_ARROW
             if price < previous_close:
                 arrow = DOWN_ARROW
-            message_builder.add_bold_text("{:<30}".format(name[:30]))
+            message_builder.add_bold_text("{:<10}".format(symbol[:10]))
             message_builder.add_text("{:<20}".format(price[:20]))
             gains = "{} {}".format(change, arrow)
             message_builder.add_text("{:<10}".format(gains))

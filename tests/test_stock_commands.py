@@ -56,4 +56,4 @@ def test_index_command(indexes_command):
         if isinstance(block, HeaderBlock) or isinstance(block, SectionBlock):
             text_blocks.append(block)
             print(block.text.text)
-    assert any("Russell 2000" in block.text.text for block in text_blocks)
+    assert any("GSPC" in block.text.text for block in text_blocks)
