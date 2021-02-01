@@ -1,6 +1,10 @@
-from . import stock_commands # noqa ignore=F405
+import logging
+from . import chart_commands, stock_commands # noqa ignore=F405
 from .plugin_base import PluginBase
 from .slack import BlockBuilder, MessageBuilder
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class MisterMarketBot:
@@ -11,6 +15,7 @@ class MisterMarketBot:
         self.plugins = PluginBase().subclasses
         if not len(set(self.plugins)) == len(self.plugins):
             raise Exception("Plugin command collision")
+        logger.debug(f"Initialized plugins: {self.plugins}")
 
     def _parse_command(self, command_string):
         command_list = command_string.split()
@@ -29,6 +34,7 @@ class MisterMarketBot:
     def handle_slack_message(self, message):
         # Strip user id from message:
         message = message.split(' ', 1)[1]
+        logging.debug(f"bot message: {message}")
         command, args = self._parse_command(message)
 
         if not self._is_command(command):
