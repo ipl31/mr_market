@@ -13,6 +13,7 @@ env:
   IEX_TOKEN: ${{ secrets.IEX_TEST_TOKEN }} 
   IEX_API_VERSION: ${{ secrets.IEX_TEST_API_VERSION }}
   FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+  QUICKCHARTS_API_KEY: ${{ secrets.QUICKCHARTS_API_KEY }}
 
 jobs:
   tests:
