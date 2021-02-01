@@ -60,7 +60,7 @@ class IndexesCommand(PluginBase):
                 arrow = DOWN_ARROW
             message_builder.add_bold_text("{:<10}".format(symbol[:10]))
             message_builder.add_text("{:<20}".format(price[:20]))
-            gains = "{}% {}".format(change, arrow)
+            gains = "{}%% {}".format(change, arrow)
             message_builder.add_text("{:<10}".format(gains))
             high_low = "{} / {}".format(day_high, day_low)
             message_builder.add_text("{:<30}".format(high_low))
@@ -93,7 +93,7 @@ class QuoteCommand(PluginBase):
         name = quote.get("name")
         price = helpers.commaify(quote.get("price"))
         open_price = helpers.commaify(quote.get("open"))
-        change = helpers.commaify(quote.get("changePercentage"))
+        change = helpers.commaify(quote.get("changesPercentage"))
         high52 = helpers.commaify(quote.get("yearHigh"))
         low52 = helpers.commaify(quote.get("yearLow"))
         avg50 = helpers.commaify(quote.get("priceAvg50"))
