@@ -35,9 +35,9 @@ class IndexesCommand(PluginBase):
             # open_price = data.get("open")
             previous_close = helpers.commaify(index.get("previousClose"))
 
-            message_builder.add_text(symbol)
-            message_builder.add_text("--")
-            message_builder.add_text(name)
+            message_builder.add_bold_text(symbol)
+            message_builder.add_bold_text("-")
+            message_builder.add_bold_text(name)
             block_builder.add_section_block(message_builder.product)
 
             message_builder.add_bold_text("Price/Last Close:")
