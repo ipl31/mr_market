@@ -28,7 +28,9 @@ class QuickChartsChart(object):
         # x axis labels
         self.xlabel = xlabel
         self.dataset = dataset
-        self.api_key = os.environ["QUICKCHARTS_API_KEY"]
+        # self.api_key = os.environ["QUICKCHARTS_API_KEY"]
+        # TODO Fix when implemented
+        self.api_key = None
         self.qc_url = f"{QUICKCHART_URL}?{self.api_key}"
 
         self.config = {"width": self.width,
