@@ -21,7 +21,7 @@ class IndexesCommand(PluginBase):
         message_builder = MessageBuilder()
 
         for index in data:
-            symbol = index.get("symbol")
+            # symbol = index.get("symbol")
             name = index.get("name")
             price = helpers.commaify(index.get("price"))
             day_high = helpers.commaify(index.get("dayHigh"))
@@ -34,20 +34,18 @@ class IndexesCommand(PluginBase):
             # avg_volume = data.get("avgVolume")
             # open_price = data.get("open")
             previous_close = helpers.commaify(index.get("previousClose"))
+            change = (index.get("previousClose") - index.get("price")) / \
+                index.get("previousClose")
+            formatted_change = "{0:.0%}".format(change)
 
-            message_builder.add_bold_text(symbol)
-            message_builder.add_bold_text("-")
             message_builder.add_bold_text(name)
-            block_builder.add_section_block(message_builder.product)
-
-            message_builder.add_bold_text("Price/Last Close:")
+            message_builder.add_bold_text("Price")
             message_builder.add_text(price)
             if price > previous_close:
                 message_builder.add_text(":arrow_upper_right:")
             if price < previous_close:
                 message_builder.add_text(":arrow_lower_right:")
-            message_builder.add_bold_text("/")
-            message_builder.add_text(previous_close)
+            message_builder.add_text(formatted_change)
             message_builder.add_bold_text("|")
             message_builder.add_bold_text("Day High/Low:")
             message_builder.add_text(day_high)
