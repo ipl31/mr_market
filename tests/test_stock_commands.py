@@ -28,7 +28,7 @@ def test_quote_command_stock(quote_command):
 
 def test_quote_command_gold(quote_command):
     result = quote_command.run('GCUSD')
-    assert isinstance(result[0], HeaderBlock)
+    assert isinstance(result[0], SectionBlock)
     assert isinstance(result[1], DividerBlock)
     assert isinstance(result[2], SectionBlock)
     assert "GCUSD" in result[0].text.text

@@ -6,6 +6,10 @@ from . import constants, helpers
 from .plugin_base import PluginBase
 from .slack import BlockBuilder, MessageBuilder
 
+UP_ARROW = ":arrow_upper_right:"
+DOWN_ARROW = ":arrow_lower_right:"
+FLAT_ARROW = ":left_right_arrow:"
+
 
 class IndexesCommand(PluginBase):
     command = "indexes"
@@ -19,6 +23,20 @@ class IndexesCommand(PluginBase):
     def _build_index_msg_block(data):
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
+
+        # Table headers
+        header_name = "| {:<30}".format("Index"[:30])
+        header_price = "| {:<20}".format("Price"[:20])
+        header_gains = "| {:<10}".format("Gainz"[:10])
+        day_high_low = "| {:<30}".format("Day H/L"[:20])
+        avg_200 = "| {:<20}".format("200 MA"[:10])
+
+        message_builder.add_bold_text(''.join([header_name,
+                                               header_price,
+                                               header_gains,
+                                               day_high_low,
+                                               avg_200]))
+        block_builder.add_section_block(message_builder.product)
 
         for index in data:
             # symbol = index.get("symbol")
@@ -36,29 +54,16 @@ class IndexesCommand(PluginBase):
             # open_price = data.get("open")
             previous_close = helpers.commaify(index.get("previousClose"))
 
-            # Table headers
-            header_name = "| {:<30}".format("Index"[:30])
-            header_price = "| {:<20}".format("Price"[:20])
-            header_gains = "| {:<10}".format("Gainz"[:10])
-            day_high_low = "| {:<30}".format("Day H/L"[:20])
-            avg_200 = "| {:<20}".format("200 MA"[:10])
-
-            message_builder.add_bold_text(''.join([header_name,
-                                                  header_price,
-                                                  header_gains,
-                                                  day_high_low,
-                                                  avg_200]))
-            block_builder.add_section_block(message_builder.product)
-
+            arrow = FLAT_ARROW
             if price > previous_close:
-                arrow = ":arrow_upper_right:"
+                arrow = UP_ARROW
             if price < previous_close:
-                arrow = ":arrow_lower_right:"
-            message_builder.add_bold_text("| {:<30}".format(name[:30]))
-            message_builder.add_text("| {:<20}".format(price[:20]))
-            gains = "| {} {}".format(change, arrow)
-            message_builder.add_text("| {:<10}".format(gains))
-            high_low = "| {} / {}".format(day_high, day_low)
+                arrow = DOWN_ARROW
+            message_builder.add_bold_text("{:<30}".format(name[:30]))
+            message_builder.add_text("{:<20}".format(price[:20]))
+            gains = "{} {}".format(change, arrow)
+            message_builder.add_text("{:<10}".format(gains))
+            high_low = "{} / {}".format(day_high, day_low)
             message_builder.add_text("{:<30}".format(high_low))
             message_builder.add_text("{:<20}".format(price_avg_200))
 
@@ -88,6 +93,8 @@ class QuoteCommand(PluginBase):
         symbol = quote.get("symbol")
         name = quote.get("name")
         price = helpers.commaify(quote.get("price"))
+        open = helpers.commaify(quote.get("open"))
+        change = helpers.commaify(quote.get("changePercentage"))
         high52 = helpers.commaify(quote.get("yearHigh"))
         low52 = helpers.commaify(quote.get("yearLow"))
         avg50 = helpers.commaify(quote.get("priceAvg50"))
@@ -100,22 +107,35 @@ class QuoteCommand(PluginBase):
         message_builder = MessageBuilder()
 
         message_builder.add_text(symbol)
-        message_builder.add_text("--")
+        message_builder.add_text("|")
         message_builder.add_text(name)
-        block_builder.add_header_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        message_builder.add_bold_text("Price:")
-        message_builder.add_text(price)
-        message_builder.add_bold_text("--")
-        message_builder.add_bold_text("Prev Close")
-        message_builder.add_text(prev_close)
         block_builder.add_section_block(message_builder.product)
         block_builder.add_divider_block()
 
+        arrow = FLAT_ARROW
+        if price > prev_close:
+            arrow = UP_ARROW
+        if price < prev_close:
+            arrow = DOWN_ARROW
+        message_builder.add_bold_text("Price:")
+        message_builder.add_text("{} {} {}".format(price, arrow, change))
+        message_builder.add_bold_text("|")
+        message_builder.add_bold_text("Prev Close")
+        message_builder.add_text(prev_close)
+        message_builder.add_text("|")
+        message_builder.add_text("Open:")
+        message_builder.add_text(open)
+        block_builder.add_section_block(message_builder.product)
+        block_builder.add_divider_block()
+
+        arrow = FLAT_ARROW
+        if volume > avg_volume:
+            arrow = UP_ARROW
+        if volume < avg_volume:
+            arrow = DOWN_ARROW
         message_builder.add_bold_text("Volume:")
-        message_builder.add_text(volume)
-        message_builder.add_bold_text("--")
+        message_builder.add_text("{} {}".format(volume, arrow))
+        message_builder.add_bold_text("|")
         message_builder.add_bold_text("Avg Volume")
         message_builder.add_text(avg_volume)
         block_builder.add_section_block(message_builder.product)
@@ -123,7 +143,7 @@ class QuoteCommand(PluginBase):
 
         message_builder.add_bold_text("52 High")
         message_builder.add_text(high52)
-        message_builder.add_bold_text("--")
+        message_builder.add_bold_text("|")
         message_builder.add_bold_text("52 Low")
         message_builder.add_text(low52)
         block_builder.add_section_block(message_builder.product)
@@ -131,7 +151,7 @@ class QuoteCommand(PluginBase):
 
         message_builder.add_bold_text("50 MA:")
         message_builder.add_text(avg50)
-        message_builder.add_bold_text("--")
+        message_builder.add_bold_text("|")
         message_builder.add_bold_text("200 MA:")
         message_builder.add_text(avg200)
         block_builder.add_section_block(message_builder.product)
