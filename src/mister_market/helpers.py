@@ -21,7 +21,7 @@ def get_fmp_indexes(brief=True):
                      "^IXIC",
                      "^RUT",
                      "^VIX",
-                     "^DX-Y.NYB",
+                     "DX-Y.NYB",
                      "^GVZ"]
 
     key = os.environ["FMP_API_KEY"]
