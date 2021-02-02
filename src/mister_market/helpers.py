@@ -22,7 +22,17 @@ def get_fmp_indexes(brief=True):
                      "^RUT",
                      "^VIX",
                      "DX-Y.NYB",
-                     "^GVZ"]
+                     "^GVZ",
+                     "^FTSE",
+                     "^KS11",
+                     "^GDAXI",
+                     "^N225",
+                     "IMOEX.ME",
+                     "^OVX"
+                     "^NSEI",
+                     "^DJT",
+                     "^DJI",
+                     "^SSEC"]
 
     key = os.environ["FMP_API_KEY"]
     url = "https://financialmodelingprep.com/api/v3/quotes/index"

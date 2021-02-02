@@ -1,6 +1,7 @@
 from iexfinance import altdata
 from iexfinance.stocks import Stock
 from iexfinance.utils.exceptions import IEXQueryError
+from prettytable import PrettyTable
 from . import constants, helpers
 from .plugin_base import PluginBase
 from .slack import BlockBuilder, MessageBuilder
@@ -22,51 +23,24 @@ class IndexesCommand(PluginBase):
     def _build_index_msg_block(data):
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
-
-        # Table headers
-        header_name = "| {:<10}".format("Index"[:10])
-        header_price = "| {:<20}".format("Price"[:20])
-        header_gains = "| {:<10}".format("Gainz"[:10])
-        day_high_low = "| {:<30}".format("Day H/L"[:30])
-        avg_200 = "| {:<20}".format("200 MA"[:20])
-
-        message_builder.add_bold_text(''.join([header_name,
-                                               header_price,
-                                               header_gains,
-                                               day_high_low,
-                                               avg_200]))
-        block_builder.add_section_block(message_builder.product)
-
+        pt = PrettyTable()
+        pt.align = 'l'
+        pt.field_names = ['Index', 'Gainz', 'Price', 'Open', 'Prev Close',
+                          'Day High', 'Day Low']
+        pt.sortby = "Gainz"
         for index in data:
-            symbol = index.get("symbol")
-            # name = index.get("name")
-            price = helpers.commaify(index.get("price"))
-            day_high = helpers.commaify(index.get("dayHigh"))
-            day_low = helpers.commaify(index.get("dayLow"))
-            change = helpers.commaify(index.get("changesPercentage"))
-            # year_high = data.get("yearHigh")
-            # year_low = data.get("yearLow")
-            # price_avg_50 = data.get("priceAvg50")
-            price_avg_200 = index.get("priceAvg200")
-            # volume = data.get("volume")
-            # avg_volume = data.get("avgVolume")
-            # open_price = data.get("open")
-            previous_close = helpers.commaify(index.get("previousClose"))
+            pt.add_row([index.get("symbol"),
+                        "{}%".format(
+                            index.get("changesPercentage")),
+                        helpers.commaify(index.get("price")),
+                        helpers.commaify(index.get("open")),
+                        helpers.commaify(index.get("previousClose")),
+                        helpers.commaify(index.get("dayHigh")),
+                        helpers.commaify(index.get("dayLow"))])
 
-            arrow = FLAT_ARROW
-            if price > previous_close:
-                arrow = UP_ARROW
-            if price < previous_close:
-                arrow = DOWN_ARROW
-            message_builder.add_bold_text("{:<10}".format(symbol[:10]))
-            message_builder.add_text("{:<20}".format(price[:20]))
-            gains = "{}% {}".format(change, arrow)
-            message_builder.add_text("{:<10}".format(gains))
-            high_low = "{} / {}".format(day_high, day_low)
-            message_builder.add_text("{:<30}".format(high_low))
-            message_builder.add_text("{:<20}".format(price_avg_200))
-
-            block_builder.add_section_block(message_builder.product)
+        message_builder.add_text("```{}```".format(
+            pt.get_string(title="Indexes")))
+        block_builder.add_section_block(message_builder.product)
 
         return block_builder.product
 
@@ -89,150 +63,49 @@ class QuoteCommand(PluginBase):
 
     @staticmethod
     def _build_gold_quote_msg_block(quote):
-        symbol = quote.get("symbol")
-        name = quote.get("name")
-        price = helpers.commaify(quote.get("price"))
-        open_price = helpers.commaify(quote.get("open"))
-        change = helpers.commaify(quote.get("changesPercentage"))
-        high52 = helpers.commaify(quote.get("yearHigh"))
-        low52 = helpers.commaify(quote.get("yearLow"))
-        avg50 = helpers.commaify(quote.get("priceAvg50"))
-        avg200 = helpers.commaify(quote.get("priceAvg200"))
-        volume = helpers.commaify(quote.get("volume"))
-        avg_volume = helpers.commaify(quote.get("avgVolume"))
-        prev_close = helpers.commaify(quote.get("previousClose"))
+        pt = PrettyTable()
+        pt.align = 'l'
+        pt.field_names = ['Gainz', 'Price', 'Open', 'Prev Close',
+                          'Day High', 'Day Low']
+        pt.add_row(["{}%".format(
+            quote.get("changesPercentage")),
+            helpers.commaify(quote.get("price")),
+            helpers.commaify(quote.get("open")),
+            helpers.commaify(quote.get("previousClose")),
+            helpers.commaify(quote.get("dayHigh")),
+            helpers.commaify(quote.get("dayLow"))])
 
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
 
-        message_builder.add_text(symbol)
-        message_builder.add_text("|")
-        message_builder.add_text(name)
-        block_builder.add_section_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        arrow = FLAT_ARROW
-        if price > prev_close:
-            arrow = UP_ARROW
-        if price < prev_close:
-            arrow = DOWN_ARROW
-        message_builder.add_bold_text("Price:")
-        message_builder.add_text("{} {} {}".format(price, arrow, change))
-        message_builder.add_bold_text("|")
-        message_builder.add_bold_text("Prev Close")
-        message_builder.add_text(prev_close)
-        message_builder.add_text("|")
-        message_builder.add_text("Open:")
-        message_builder.add_text(open_price)
-        block_builder.add_section_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        arrow = FLAT_ARROW
-        if volume > avg_volume:
-            arrow = UP_ARROW
-        if volume < avg_volume:
-            arrow = DOWN_ARROW
-        message_builder.add_bold_text("Volume:")
-        message_builder.add_text("{} {}".format(volume, arrow))
-        message_builder.add_bold_text("|")
-        message_builder.add_bold_text("Avg Volume")
-        message_builder.add_text(avg_volume)
-        block_builder.add_section_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        message_builder.add_bold_text("52 High")
-        message_builder.add_text(high52)
-        message_builder.add_bold_text("|")
-        message_builder.add_bold_text("52 Low")
-        message_builder.add_text(low52)
-        block_builder.add_section_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        message_builder.add_bold_text("50 MA:")
-        message_builder.add_text(avg50)
-        message_builder.add_bold_text("|")
-        message_builder.add_bold_text("200 MA:")
-        message_builder.add_text(avg200)
+        message_builder.add_text("```{}```".format(
+            pt.get_string(title=quote.get("symbol"))))
         block_builder.add_section_block(message_builder.product)
 
         return block_builder.product
 
     @staticmethod
     def _build_quote_msg_block(quote):
-
-        symbol = quote.get("symbol")
-        name = quote.get("companyName")
-        price = quote.get("latestPrice")
-        market_cap = helpers.commaify(quote.get("marketCap"))
-        volume = helpers.commaify(quote.get("volume", 0))
-        # avg_volume = helpers.commaify(quote.get("avgVolume", 0))
-        # pe = helpers.commaify(quote.get("peRatio"))
-        high52 = helpers.commaify(quote.get("week52High"))
-        low52 = helpers.commaify(quote.get("week52Low"))
-        # ytd = "{:.0%}".format(quote.get("ytdChange"))
-        prev_close = helpers.commaify((quote.get("previousClose")))
-        change = quote.get("changesPercentage")
-        # open_price = helpers.commaify(quote.get("open"))
-        # avg50 = helpers.commaify(quote.get("priceAvg50"))
-        # avg200 = helpers.commaify(quote.get("priceAvg200"))
+        pt = PrettyTable()
+        pt.align = 'l'
+        pt.field_names = ['Gainz', 'Price', 'Open', 'Prev Close',
+                          'Day High', 'Day Low', '52 H', '52 L', '200 MA']
+        pt.add_row(["{}%".format(quote.get("changesPercentage")),
+                    helpers.commaify(quote.get("price")),
+                    helpers.commaify(quote.get("open")),
+                    helpers.commaify(quote.get("previousClose")),
+                    helpers.commaify(quote.get("dayHigh")),
+                    helpers.commaify(quote.get("dayLow")),
+                    helpers.commaify(quote.get("yearHigh")),
+                    helpers.commaify(quote.get("yearLow")),
+                    "%.2f" % quote.get("priceAvg200")])
 
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
 
-        message_builder.add_text(symbol)
-        message_builder.add_text("|")
-        message_builder.add_text(name)
+        message_builder.add_text("```{}```".format(
+            pt.get_string(title=quote.get("symbol"))))
         block_builder.add_section_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        arrow = FLAT_ARROW
-        if quote.get("latestPrice") > quote.get("previousClose"):
-            arrow = UP_ARROW
-        if quote.get("latestPrice") < quote.get("previousClose"):
-            arrow = DOWN_ARROW
-        message_builder.add_bold_text("Price:")
-        message_builder.add_text("{} {} {}".format(price, arrow, change))
-        message_builder.add_bold_text("|")
-        message_builder.add_bold_text("Prev Close")
-        message_builder.add_text(prev_close)
-        message_builder.add_text("|")
-        # message_builder.add_bold_text("Open:")
-        # message_builder.add_text(open_price)
-        block_builder.add_section_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        # arrow = FLAT_ARROW
-        # if quote.get("volume") > quote.get("avgVolume"):
-        #    arrow = UP_ARROW
-        # if quote.get("volume") < quote.get("avgVolume"):
-        #    arrow = DOWN_ARROW
-        message_builder.add_bold_text("Market Cap:")
-        message_builder.add_text(market_cap)
-        message_builder.add_bold_text("Volume:")
-        message_builder.add_text(volume)
-        # message_builder.add_bold_text("|")
-        # message_builder.add_bold_text("Avg Volume")
-        # message_builder.add_text(avg_volume)
-        block_builder.add_section_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        message_builder.add_bold_text("52 High")
-        message_builder.add_text(high52)
-        message_builder.add_bold_text("|")
-        message_builder.add_bold_text("52 Low")
-        message_builder.add_text(low52)
-        block_builder.add_section_block(message_builder.product)
-        block_builder.add_divider_block()
-
-        """
-        message_builder.add_bold_text("50 MA:")
-        message_builder.add_text(avg50)
-        message_builder.add_bold_text("|")
-        message_builder.add_bold_text("200 MA:")
-        message_builder.add_text(avg200)
-        block_builder.add_section_block(message_builder.product)
-        """
-
         return block_builder.product
 
     def _get_gold_quote_blocks(self, symbol):
@@ -241,7 +114,8 @@ class QuoteCommand(PluginBase):
         return blocks
 
     def _get_stock_quote_blocks(self, symbol):
-        quote = Stock(symbol, output_format='json').get_quote()
+        quote = helpers.get_fmp_quote(symbol)
+        # quote = Stock(symbol, output_format='json').get_quote()
         blocks = self._build_quote_msg_block(quote)
         return blocks
 

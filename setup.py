@@ -67,7 +67,8 @@ setup(
         'slackblocks>=0.2.2',
         'iexfinance>=0.4.3',
         'requests>=2.25.0',
-        'quickchart.io>=0.1.3'
+        'quickchart.io>=0.1.3',
+        'prettytable>=2.0.0'
     ],
     extras_require={
     },
