@@ -31,9 +31,6 @@ class NewsCommand(PluginBase):
         for article in news:
             if article.get("lang") != "en":
                 continue
-            if article.get("image") is not None:
-                block_builder.add_image_block(article.get("image"),
-                                              article.get("source"))
 
             message_builder.add_text(article.get("headline"))
             message_builder.add_text(article.get("source"))
