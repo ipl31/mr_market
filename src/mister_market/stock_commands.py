@@ -32,8 +32,8 @@ class NewsCommand(PluginBase):
             if article.get("lang") != "en":
                 continue
 
-            message_builder.add_text(article.get("headline"))
-            message_builder.add_text(article.get("source"))
+            message_builder.add_bold_text(article.get("headline"))
+            message_builder.add_text("source:{}".format(article.get("source")))
             message_builder.add_text(article.get("url"))
             block_builder.add_section_block(message_builder.product)
         return block_builder.product
