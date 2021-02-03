@@ -83,6 +83,9 @@ class QuoteCommand(PluginBase):
         message_builder.add_text("```{}```".format(
             pt.get_string(title=quote.get("symbol"))))
         block_builder.add_section_block(message_builder.product)
+        gold_chart = "https://goldprice.org/charts/history/gold_1_year_o_usd_x.png"
+        block_builder.add_image_block(gold_chart, "Gold Chart")
+        block_builder.add_section_block("https://goldprice.org/spot-gold.html")
 
         return block_builder.product
 
@@ -105,9 +108,13 @@ class QuoteCommand(PluginBase):
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
 
+        symbol = quote.get("symbol")
         message_builder.add_text("```{}```".format(
-            pt.get_string(title=quote.get("symbol"))))
+            pt.get_string(title=symbol)))
         block_builder.add_section_block(message_builder.product)
+        chart = f"https://finviz.com/chart.ashx?t={symbol}&ty=c&ta=1&p=d&s=l"
+        block_builder.add_image_block(chart, symbol)
+        block_builder.add_section_block(chart)
         return block_builder.product
 
     def _get_gold_quote_blocks(self, symbol):
@@ -136,7 +143,7 @@ class QuoteCommand(PluginBase):
 
         if symbol in constants.GOLD_SYMBOL_ALIASES:
             return self._get_gold_quote_blocks(
-                constants.GOLD_SYMBOL_ALIASES)
+                constants.FMP_GOLD_SYMBOL)
 
         if helpers.is_symbol_in_iex_universe(symbol):
             return self._get_stock_quote_blocks(symbol)
