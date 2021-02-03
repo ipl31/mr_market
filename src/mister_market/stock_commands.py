@@ -2,13 +2,15 @@ from iexfinance import altdata
 from iexfinance.stocks import Stock
 from iexfinance.utils.exceptions import IEXQueryError
 from prettytable import PrettyTable
-from . import constants, helpers
+from . import helpers
+from .constants import MisterMarketConstants
 from .plugin_base import PluginBase
 from .slack import BlockBuilder, MessageBuilder
 
 UP_ARROW = ":arrow_upper_right:"
 DOWN_ARROW = ":arrow_lower_right:"
 FLAT_ARROW = ":left_right_arrow:"
+constants = MisterMarketConstants()
 
 
 class IndexesCommand(PluginBase):
@@ -132,8 +134,9 @@ class QuoteCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol in constants.GOLD_ALIASES:
-            return self._get_gold_quote_blocks(constants.GOLD_COMM_SYMBOL)
+        if symbol in constants.GOLD_SYMBOL_ALIASES:
+            return self._get_gold_quote_blocks(
+                constants.GOLD_SYMBOL_ALIASES)
 
         if helpers.is_symbol_in_iex_universe(symbol):
             return self._get_stock_quote_blocks(symbol)
@@ -175,8 +178,8 @@ class PriceCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol in constants.GOLD_ALIASES:
-            symbol = constants.GOLD_COMM_SYMBOL
+        if symbol in constants.GOLD_SYMBOL_ALIASES:
+            symbol = constants.FMP_GOLD_SYMBOL
             price = helpers.get_gold_price()
             message_builder.add_terminal_text(symbol)
             message_builder.add_terminal_text(price)

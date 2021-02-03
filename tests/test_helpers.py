@@ -6,6 +6,11 @@ def test_get_fmp_quote():
     assert 'GCUSD' in result['symbol']
 
 
+def test_get_fmp_stock_symbol_universe():
+    result = helpers.get_fmp_stock_symbol_universe()
+    assert any(['SPY' in [s['symbol'] for s in result]])
+
+
 def test_get_gold_price():
     assert isinstance(helpers.get_gold_price(), float)
 

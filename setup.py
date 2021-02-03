@@ -68,7 +68,9 @@ setup(
         'iexfinance>=0.4.3',
         'requests>=2.25.0',
         'quickchart.io>=0.1.3',
-        'prettytable>=2.0.0'
+        'prettytable>=2.0.0',
+        'fuzzywuzzy==0.18.0',
+        'python-Levenshtein>=0.12.2'
     ],
     extras_require={
     },
