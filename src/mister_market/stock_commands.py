@@ -13,6 +13,33 @@ FLAT_ARROW = ":left_right_arrow:"
 constants = MisterMarketConstants()
 
 
+class NewsCommand(PluginBase):
+    command = "news"
+    usage = "news $symbol"
+    description = "get news for a symbol"
+
+    def __init__(self):
+        pass
+
+    def run(self, *args, **kwargs):
+        args = list(args)
+        symbol = args.pop(0)
+        symbol = symbol.upper()
+        news = helpers.get_iex_symbol_news(symbol)
+        block_builder = BlockBuilder()
+        message_builder = MessageBuilder()
+        for article in news:
+            if article.get("image") is not None:
+                block_builder.add_image_block(article.get("image"),
+                                              article.get("source"))
+
+            message_builder.add_text(article.get("headline"))
+            message_builder.add_text(article.get("source"))
+            message_builder.add_text(article.get("url"))
+            block_builder.add_section_block(message_builder.product)
+        return block_builder.product
+
+
 class IndexesCommand(PluginBase):
     command = "indexes"
     usage = "indexes or indexes all"

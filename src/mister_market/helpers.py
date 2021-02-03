@@ -3,6 +3,7 @@ import requests
 from .constants import MisterMarketConstants
 from functools import lru_cache
 from iexfinance import refdata
+from iexfinance.stocks import Stock
 
 FMP_API_KEY = os.environ["FMP_API_KEY"]
 constants = MisterMarketConstants()
@@ -17,6 +18,11 @@ def commaify(data):
 @lru_cache(maxsize=1)
 def get_iex_symbol_universe():
     return refdata.get_symbols(output_format='json')
+
+
+def get_iex_symbol_news(symbol, limit=5):
+    stock = Stock(symbol)
+    return stock.get_news(last=limit)
 
 
 def get_fmp_indexes(brief=True):
