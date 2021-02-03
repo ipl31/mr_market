@@ -21,7 +21,7 @@ def get_iex_symbol_universe():
 
 
 def get_iex_symbol_news(symbol, limit=5):
-    stock = Stock(symbol)
+    stock = Stock(symbol,output_format='json')
     return stock.get_news(last=limit)
 
 
