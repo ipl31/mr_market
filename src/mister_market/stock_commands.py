@@ -1,3 +1,4 @@
+import dateutil
 from iexfinance import altdata
 from iexfinance.stocks import Stock
 from iexfinance.utils.exceptions import IEXQueryError
@@ -11,6 +12,62 @@ UP_ARROW = ":arrow_upper_right:"
 DOWN_ARROW = ":arrow_lower_right:"
 FLAT_ARROW = ":left_right_arrow:"
 constants = MisterMarketConstants()
+
+
+class ExpirationCommand(PluginBase):
+    command = "expiration"
+    usage = "expiration $symbol"
+    description = "get options expiration dates for $symbol"
+
+    def __init__(self):
+        pass
+
+    def run(self, *args, **kwargs):
+        args = list(args)
+        symbol = args.pop(0)
+        symbol = symbol.upper()
+        expirations = helpers.get_options_expiration(symbol)
+        block_builder = BlockBuilder()
+        block_builder.add_section_block(str(expirations))
+        return block_builder.product
+
+
+class ChainsCommand(PluginBase):
+    command = "chains"
+    usage = "chains $symbol $expiration $strike"
+    description = "get options expiration dates for $symbol"
+
+    def __init__(self):
+        pass
+
+    def run(self, *args, **kwargs):
+        args = list(args)
+        symbol = args.pop(0).upper()
+        expiration = args.pop(0)
+        strike = args.pop(0)
+        block_builder = BlockBuilder()
+
+        try:
+            float(strike)
+            dateutil.parser.parse(expiration)
+        except ValueError:
+            block_builder.add_section_block("Invalid arguments. Try $symbol $expiration $strike")
+            return block_builder.product
+
+        expirations = helpers.get_options_expiration(symbol)
+        if expiration not in expirations:
+            block_builder.add_section_block(
+                "Invalid expiration. Try one of these {}".format(expirations))
+            return block_builder.product
+        chains = helpers.get_options_chains_near_strike_tabulated(symbol, expiration, strike)
+        message_builder = MessageBuilder()
+        message_builder.add_bold_text("Calls\n")
+        message_builder.add_text(chains["calls"])
+        block_builder.add_section_block(message_builder.product)
+        message_builder.add_bold_text("Puts\n")
+        message_builder.add_text(chains["puts"])
+        block_builder.add_section_block(message_builder.product)
+        return block_builder.product
 
 
 class NewsCommand(PluginBase):

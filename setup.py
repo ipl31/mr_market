@@ -70,7 +70,9 @@ setup(
         'quickchart.io>=0.1.3',
         'prettytable>=2.0.0',
         'fuzzywuzzy==0.18.0',
-        'python-Levenshtein>=0.12.2'
+        'python-Levenshtein>=0.12.2',
+        'yfinance==0.1.55',
+        'tabulate==0.8.7'
     ],
     extras_require={
     },
