@@ -28,7 +28,7 @@ class NewsCommand(PluginBase):
         news = helpers.get_iex_symbol_news(symbol)
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
-        for article in news[symbol]["news"]:
+        for article in news:
             if article.get("lang") != "en":
                 continue
             if article.get("image") is not None:
