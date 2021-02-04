@@ -72,7 +72,8 @@ setup(
         'fuzzywuzzy==0.18.0',
         'python-Levenshtein>=0.12.2',
         'yfinance==0.1.55',
-        'tabulate==0.8.7'
+        'tabulate==0.8.7',
+        'python-dateutil==2.8.1'
     ],
     extras_require={
     },

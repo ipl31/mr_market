@@ -27,46 +27,68 @@ class ExpirationCommand(PluginBase):
         symbol = args.pop(0)
         symbol = symbol.upper()
         expirations = helpers.get_options_expiration(symbol)
+        pt = PrettyTable()
+        pt.align = 'l'
+        pt.field_names = ['{} Option Expirations'.format(symbol)]
+        pt.sortby = '{} Option Expirations'.format(symbol)
+        for expiration in expirations:
+            pt.add_row([expiration])
         block_builder = BlockBuilder()
-        block_builder.add_section_block(str(expirations))
+        message_builder = MessageBuilder()
+        title = f"{symbol} option expirations"
+        message_builder.add_text(f'```{pt.get_string()}```')
+        block_builder.add_section_block(message_builder.product)
         return block_builder.product
 
 
 class ChainsCommand(PluginBase):
-    command = "chains"
-    usage = "chains $symbol $expiration $strike"
+    command = "chain"
+    usage = "chain $symbol $expiration $strike"
     description = "get options expiration dates for $symbol"
 
     def __init__(self):
         pass
 
     def run(self, *args, **kwargs):
+        block_builder = BlockBuilder()
+        args_len = len(args)
+        if args_len < 3:
+            block_builder.add_section_block("Invalid arguments. Try $symbol $expiration $strike $call/$put")
+            return block_builder.product
         args = list(args)
         symbol = args.pop(0).upper()
         expiration = args.pop(0)
         strike = args.pop(0)
-        block_builder = BlockBuilder()
+        option_type = None
+        if args_len > 3:
+            option_type = args.pop(0)
+            if option_type.lower() not in ["put", "puts", "call", "calls"]:
+                block_builder.add_section_block("Invalid arguments. Try $symbol $expiration $strike $call/$put")
+                return block_builder.product
 
         try:
             float(strike)
             dateutil.parser.parse(expiration)
         except ValueError:
-            block_builder.add_section_block("Invalid arguments. Try $symbol $expiration $strike")
+            block_builder.add_section_block("Invalid arguments. Try $symbol $expiration $strike $call/$put")
             return block_builder.product
 
         expirations = helpers.get_options_expiration(symbol)
         if expiration not in expirations:
+            expiration_cmd = ExpirationCommand()
             block_builder.add_section_block(
                 "Invalid expiration. Try one of these {}".format(expirations))
             return block_builder.product
         chains = helpers.get_options_chains_near_strike_tabulated(symbol, expiration, strike)
         message_builder = MessageBuilder()
-        message_builder.add_bold_text("Calls\n")
-        message_builder.add_text(chains["calls"])
-        block_builder.add_section_block(message_builder.product)
-        message_builder.add_bold_text("Puts\n")
-        message_builder.add_text(chains["puts"])
-        block_builder.add_section_block(message_builder.product)
+        if option_type is None or option_type in ["call", "calls"]:
+            message_builder.add_bold_text(f"{symbol} Calls")
+            message_builder.add_text(f'```{chains["calls"]}```')
+            block_builder.add_section_block(message_builder.product)
+        if option_type is None or option_type in ["put", "puts"]:
+            message_builder.add_bold_text(f"{symbol} Puts")
+            message_builder.add_text(f'```{chains["puts"]}```')
+            block_builder.add_section_block(message_builder.product)
         return block_builder.product
 
 
