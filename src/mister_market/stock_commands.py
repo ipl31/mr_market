@@ -35,7 +35,6 @@ class ExpirationCommand(PluginBase):
             pt.add_row([expiration])
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
-        title = f"{symbol} option expirations"
         message_builder.add_text(f'```{pt.get_string()}```')
         block_builder.add_section_block(message_builder.product)
         return block_builder.product
@@ -53,7 +52,8 @@ class ChainsCommand(PluginBase):
         block_builder = BlockBuilder()
         args_len = len(args)
         if args_len < 3:
-            block_builder.add_section_block("Invalid arguments. Try $symbol $expiration $strike $call/$put")
+            block_builder.add_section_block(("Invalid arguments. "
+                                             "Try $symbol $expiration $strike $call/$put"))
             return block_builder.product
         args = list(args)
         symbol = args.pop(0).upper()
@@ -63,19 +63,20 @@ class ChainsCommand(PluginBase):
         if args_len > 3:
             option_type = args.pop(0)
             if option_type.lower() not in ["put", "puts", "call", "calls"]:
-                block_builder.add_section_block("Invalid arguments. Try $symbol $expiration $strike $call/$put")
+                block_builder.add_section_block(("Invalid arguments. "
+                                                 "Try $symbol $expiration $strike $call/$put"))
                 return block_builder.product
 
         try:
             float(strike)
             dateutil.parser.parse(expiration)
         except ValueError:
-            block_builder.add_section_block("Invalid arguments. Try $symbol $expiration $strike $call/$put")
+            block_builder.add_section_block(("Invalid arguments. "
+                                             "Try $symbol $expiration $strike $call/$put"))
             return block_builder.product
 
         expirations = helpers.get_options_expiration(symbol)
         if expiration not in expirations:
-            expiration_cmd = ExpirationCommand()
             block_builder.add_section_block(
                 "Invalid expiration. Try one of these {}".format(expirations))
             return block_builder.product
@@ -217,9 +218,10 @@ class QuoteCommand(PluginBase):
         message_builder.add_text("```{}```".format(
             pt.get_string(title=symbol)))
         block_builder.add_section_block(message_builder.product)
-        chart = f"https://finviz.com/chart.ashx?t={symbol}&ty=c&ta=1&p=d&s=l"
-        block_builder.add_image_block(chart, symbol)
-        block_builder.add_section_block(chart)
+        chart_url = f"https://mistermarket.io/stocks/{symbol}/chart"
+        img_url = f"https://mistermarket.io/stocks/{symbol}/chart.png"
+        block_builder.add_image_block(img_url, symbol)
+        block_builder.add_section_block(chart_url)
         return block_builder.product
 
     def _get_gold_quote_blocks(self, symbol):
