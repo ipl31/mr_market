@@ -8,7 +8,7 @@ class SymbolResolver(object):
     """ Class to provide lookup/resolution of symbols"""
 
     def __init__(self):
-        self.fmp_stocks = helpers.get_fmp_stock_symbol_universe()
+        self.fmp_stocks = helpers.get_fmp_stock_universe()
         self.fmp_stock_symbols = [d["symbol"] for d in self.fmp_stocks]
         self.fmp_cryptos = helpers.get_fmp_crypto_symbol_universe()
         self.fmp_crypto_symbols = [d["symbol"] for d in self.fmp_cryptos]

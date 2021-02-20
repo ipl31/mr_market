@@ -37,6 +37,14 @@ class MisterMarketConstants(object):
         return ["GCUSD", "XAUUSD", "XAU"]
 
     @constant
+    def BTC_ALIASES():
+        return ["BTC"]
+
+    @constant
+    def FMP_BTC_SYMBOL():
+        return "BTCUSD"
+
+    @constant
     def STOCK():
         return "stock"
 

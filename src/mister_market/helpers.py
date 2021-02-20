@@ -1,4 +1,6 @@
 import os
+
+import fmpsdk
 import requests
 import yfinance as yf
 from .constants import MisterMarketConstants
@@ -6,6 +8,7 @@ from functools import lru_cache
 from iexfinance import refdata
 from iexfinance.stocks import Stock
 from tabulate import tabulate
+
 
 FMP_API_KEY = os.environ["FMP_API_KEY"]
 constants = MisterMarketConstants()
@@ -145,10 +148,27 @@ def get_gold_price():
 
 
 @lru_cache(maxsize=1)
-def get_fmp_stock_symbol_universe():
+def get_fmp_stock_universe():
+    # Gets list of dicts with symbols, name, price and exchange.
     url = "https://financialmodelingprep.com/api/v3/stock/list"
     response = requests.get(f"{url}?apikey={FMP_API_KEY}")
     return response.json()
+
+
+@lru_cache(maxsize=1)
+def get_fmp_symbol_universe():
+    # TODO: Switch this to use FMPSDK when bug fix is released:
+    url = "https://financialmodelingprep.com/api/v3/quotes/crypto"
+    cryptos = requests.get(f"{url}?apikey={FMP_API_KEY}").json()
+    stocks = fmpsdk.symbols_list(FMP_API_KEY)
+    commodities = fmpsdk.commodities_list(FMP_API_KEY)
+    fx = fmpsdk.available_forex(FMP_API_KEY)
+    # TODO: add other exchanges like TSX and Mutual funds etc...
+    symbols = [s["symbol"] for s in stocks]
+    symbols = symbols + [c["symbol"] for c in commodities]
+    symbols = symbols + [c["symbol"] for c in cryptos]
+    symbols = symbols + [f["symbol"] for f in fx]
+    return symbols
 
 
 @lru_cache(maxsize=1)
