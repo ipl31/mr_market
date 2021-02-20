@@ -6,9 +6,8 @@ from prettytable import PrettyTable
 from . import helpers
 from .constants import MisterMarketConstants
 from .plugin_base import PluginBase
-from .slack import BlockBuilder, MessageBuilder
+from .slack import BlockBuilder, MessageBuilder, QuoteBlock
 from mister_market.quotes import FmpQuote
-from mister_market.pretty_tables import QuotePrettyTable
 
 UP_ARROW = ":arrow_upper_right:"
 DOWN_ARROW = ":arrow_lower_right:"
@@ -174,17 +173,8 @@ class QuoteCommand(PluginBase):
     @staticmethod
     def _build_quote_msg_block(symbol):
         quote = FmpQuote(symbol)
-        text_table = QuotePrettyTable(quote).build_table()
-        block_builder = BlockBuilder()
-        message_builder = MessageBuilder()
-        message_builder.add_text("```{}```".format(
-            text_table))
-        block_builder.add_section_block(message_builder.product)
-        chart_url = f"https://mistermarket.io/stocks/{symbol}/chart"
-        img_url = f"https://mistermarket.io/stocks/{symbol}/chart.png"
-        block_builder.add_image_block(img_url, symbol)
-        block_builder.add_section_block(chart_url)
-        return block_builder.product
+        quote_block = QuoteBlock(quote)
+        return quote_block.build_quote()
 
     def run(self, *args, **kwargs):
         args = list(args)
