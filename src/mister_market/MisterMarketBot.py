@@ -62,6 +62,8 @@ class MisterMarketBot:
             logger.debug(f"tokenized args: {args}")
             symbol = args.pop(0)
             symbol = symbol.upper()
+            if "HTTP://" in symbol:
+                symbol = symbol.partition("|")[2].partition(">")[0]
             if symbol in constants.GOLD_SYMBOL_ALIASES:
                 logging.debug(
                     f"Alias detected. Substituting {constants.FMP_GOLD_SYMBOL} for {symbol}")
@@ -84,7 +86,7 @@ class MisterMarketBot:
 
         if maybe_symbol is not None:
             logging.debug(f"Resolved fuzzy lookup to symbol: {maybe_symbol}")
-            return self._get_plugin("quote").run(maybe_symbol)
+            return self._get_plugin("price").run(maybe_symbol)
 
         message_builder = MessageBuilder()
         block_builder = BlockBuilder()

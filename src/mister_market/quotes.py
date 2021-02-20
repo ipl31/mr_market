@@ -33,3 +33,5 @@ class FmpQuote:
         self.market_cap = data["marketCap"]
         self.price_avg_50d = data["priceAvg50"]
         self.price_avg_200d = data["priceAvg200"]
+        self.chart_image_url = f"https://mistermarket.io/stocks/{self.symbol}/chart.png"
+        self.chart_url = f"https://mistermarket.io/stocks/{self.symbol}/chart"
