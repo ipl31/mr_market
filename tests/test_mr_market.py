@@ -23,12 +23,12 @@ def test_handle_slack_message_bad_command(bot):
 def test_handle_slack_message_btc(bot):
     result = bot.handle_slack_message("@1234 price btc")
     symbol, price = result[0].text.text.split()
-    assert symbol[1:-1] == "BTC"
+    assert "BTCUSD" in symbol[1:-1]
     assert isinstance(float(price[1:-1]), float)
 
     result = bot.handle_slack_message("@1234 price BTC")
     symbol, price = result[0].text.text.split()
-    assert symbol[1:-1] == "BTC"
+    assert "BTCUSD" in symbol[1:-1]
     assert isinstance(float(price[1:-1]), float)
 
     result = bot.handle_slack_message("@1234 price ETHUSD")

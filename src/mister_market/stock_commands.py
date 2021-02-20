@@ -7,6 +7,8 @@ from . import helpers
 from .constants import MisterMarketConstants
 from .plugin_base import PluginBase
 from .slack import BlockBuilder, MessageBuilder
+from mister_market.quotes import FmpQuote
+from mister_market.pretty_tables import QuotePrettyTable
 
 UP_ARROW = ":arrow_upper_right:"
 DOWN_ARROW = ":arrow_lower_right:"
@@ -170,70 +172,19 @@ class QuoteCommand(PluginBase):
         pass
 
     @staticmethod
-    def _build_gold_quote_msg_block(quote):
-        pt = PrettyTable()
-        pt.align = 'l'
-        pt.field_names = ['Gainz', 'Price', 'Open', 'Prev Close',
-                          'Day High', 'Day Low']
-        pt.add_row(["{}%".format(
-            quote.get("changesPercentage")),
-            helpers.commaify(quote.get("price")),
-            helpers.commaify(quote.get("open")),
-            helpers.commaify(quote.get("previousClose")),
-            helpers.commaify(quote.get("dayHigh")),
-            helpers.commaify(quote.get("dayLow"))])
-
+    def _build_quote_msg_block(symbol):
+        quote = FmpQuote(symbol)
+        text_table = QuotePrettyTable(quote).build_table()
         block_builder = BlockBuilder()
         message_builder = MessageBuilder()
-
         message_builder.add_text("```{}```".format(
-            pt.get_string(title=quote.get("symbol"))))
-        block_builder.add_section_block(message_builder.product)
-        gold_chart = "https://goldprice.org/charts/history/gold_1_year_o_usd_x.png"
-        block_builder.add_image_block(gold_chart, "Gold Chart")
-        block_builder.add_section_block("https://goldprice.org/spot-gold.html")
-
-        return block_builder.product
-
-    @staticmethod
-    def _build_quote_msg_block(quote):
-        pt = PrettyTable()
-        pt.align = 'l'
-        pt.field_names = ['Gainz', 'Price', 'Open', 'Prev Close',
-                          'Day High', 'Day Low', '52 H', '52 L', '200 MA']
-        pt.add_row(["{}%".format(quote.get("changesPercentage")),
-                    helpers.commaify(quote.get("price")),
-                    helpers.commaify(quote.get("open")),
-                    helpers.commaify(quote.get("previousClose")),
-                    helpers.commaify(quote.get("dayHigh")),
-                    helpers.commaify(quote.get("dayLow")),
-                    helpers.commaify(quote.get("yearHigh")),
-                    helpers.commaify(quote.get("yearLow")),
-                    "%.2f" % quote.get("priceAvg200")])
-
-        block_builder = BlockBuilder()
-        message_builder = MessageBuilder()
-
-        symbol = quote.get("symbol")
-        message_builder.add_text("```{}```".format(
-            pt.get_string(title=symbol)))
+            text_table))
         block_builder.add_section_block(message_builder.product)
         chart_url = f"https://mistermarket.io/stocks/{symbol}/chart"
         img_url = f"https://mistermarket.io/stocks/{symbol}/chart.png"
         block_builder.add_image_block(img_url, symbol)
         block_builder.add_section_block(chart_url)
         return block_builder.product
-
-    def _get_gold_quote_blocks(self, symbol):
-        quote = helpers.get_fmp_quote(symbol)
-        blocks = self._build_gold_quote_msg_block(quote)
-        return blocks
-
-    def _get_stock_quote_blocks(self, symbol):
-        quote = helpers.get_fmp_quote(symbol)
-        # quote = Stock(symbol, output_format='json').get_quote()
-        blocks = self._build_quote_msg_block(quote)
-        return blocks
 
     def run(self, *args, **kwargs):
         args = list(args)
@@ -248,12 +199,8 @@ class QuoteCommand(PluginBase):
         block_builder.add_section_block(text=message_builder.product)
         error = block_builder.product
 
-        if symbol in constants.GOLD_SYMBOL_ALIASES:
-            return self._get_gold_quote_blocks(
-                constants.FMP_GOLD_SYMBOL)
-
-        if helpers.is_symbol_in_iex_universe(symbol):
-            return self._get_stock_quote_blocks(symbol)
+        if symbol in helpers.get_fmp_symbol_universe():
+            return self._build_quote_msg_block(symbol)
 
         return error
 
