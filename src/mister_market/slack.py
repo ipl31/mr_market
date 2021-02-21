@@ -73,6 +73,8 @@ class QuoteBlock:
         self.block_builder.add_header_block(self.quote.name)
         self.block_builder.add_image_block(self.quote.chart_image_url,
                                            alt_text=f"{self.quote.symbol} Chart")
+        if self.quote.price is not None:
+            self.quote.price = commaify(self.quote.price)
         fields = [Text(f"*Price:* ${self.quote.price}")]
 
         arrow = ""
