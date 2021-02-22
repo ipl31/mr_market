@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 from slack_bolt import App
 from slack_bolt.oauth.oauth_settings import OAuthSettings
 from slack_sdk.oauth.installation_store import FileInstallationStore
@@ -13,13 +14,17 @@ logger.debug("Staring python logger in main.py")
 token = os.environ["SLACK_BOT_TOKEN"]
 signing_secret = os.environ["SLACK_SIGNING_SECRET"]
 
+base_dir = './data'
+Path("./data").mkdir(parents=True, exist_ok=True)
+
+
 oauth_settings = OAuthSettings(
     client_id=os.environ["SLACK_CLIENT_ID"],
     client_secret=os.environ["SLACK_CLIENT_SECRET"],
     scopes=["channels:read", "groups:read", "chat:write"],
     # This is temporary. Need to migrate to S3 or something.
-    installation_store=FileInstallationStore(base_dir="./data"),
-    state_store=FileOAuthStateStore(expiration_seconds=600, base_dir="./data")
+    installation_store=FileInstallationStore(base_dir=base_dir),
+    state_store=FileOAuthStateStore(expiration_seconds=600, base_dir=base_dir)
 )
 
 
