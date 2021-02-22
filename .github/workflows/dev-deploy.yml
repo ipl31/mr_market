@@ -27,4 +27,4 @@ jobs:
         docker pull docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
         [ ! "$(docker ps -a | grep $CONTAINER_NAME)" ] || docker stop $CONTAINER_NAME
         [ ! "$(docker ps -a | grep $CONTAINER_NAME)" ] || docker rm $CONTAINER_NAME
-        docker run --name $CONTAINER_NAME --env FMP_API_KEY=${{ secrets.FMP_API_KEY }} --env IEX_TOKEN=${{ secrets.IEX_TOKEN }} --env SLACK_SIGNING_SECRET=${{ secrets.LH_SLACK_EVENTS_TOKEN }} --env SLACK_BOT_TOKEN=${{ secrets.LH_SLACK_TOKEN }} --env SLACK_CLIENT_ID=${{ secrets.LH_SLACK_CLIENT_ID }} --env ${{ secrets.LH_SLACK_CLIENT_SECRET }} -d -p 127.0.0.1:5001:5000 docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+        docker run --name $CONTAINER_NAME --env FMP_API_KEY=${{ secrets.FMP_API_KEY }} --env IEX_TOKEN=${{ secrets.IEX_TOKEN }} --env SLACK_SIGNING_SECRET=${{ secrets.LH_SLACK_EVENTS_TOKEN }} --env SLACK_BOT_TOKEN=${{ secrets.LH_SLACK_TOKEN }} --env SLACK_CLIENT_ID=${{ secrets.LH_SLACK_CLIENT_ID }} --env SLACK_CLIENT_SECRET=${{ secrets.LH_SLACK_CLIENT_SECRET }} -d -p 127.0.0.1:5001:5000 docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
